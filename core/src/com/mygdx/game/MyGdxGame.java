@@ -33,69 +33,21 @@ public class MyGdxGame extends ApplicationAdapter {
 	Viewport viewport;
 	Texture red;
 	Actor reddot;
+	int count;
 
-	/*class MyInputListener implements InputProcessor {
-
-		@Override
-		public boolean keyDown(int keycode) {
-			return false;
-		}
-
-		@Override
-		public boolean keyUp(int keycode) {
-			return false;
-		}
-
-		@Override
-		public boolean keyTyped(char character) {
-			return false;
-		}
-
-		@Override
-		public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-			return false;
-		}
-
-		@Override
-		public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-			if (screenX == (int)dot.getX() && screenY == 1080-(int)dot.getY() ) {
-				dot = new Dot();
-				dot.setPosition(0, 0);
-				dot.setSize(40, 40);
-				stage.addActor(dot);
-			}
-			return true;
-
-		}
-
-		@Override
-		public boolean touchDragged(int screenX, int screenY, int pointer) {
-			return false;
-		}
-
-		@Override
-		public boolean mouseMoved(int screenX, int screenY) {
-			return false;
-		}
-
-		@Override
-		public boolean scrolled(int amount) {
-			return false;
-		}
-	}
-	*/
 	class ActorListener extends InputListener {
 		@Override
 		public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
 			//event.getListenerActor().setSize(80, 80);
-			event.getListenerActor().setColor(Color.BLUE);
+			if (count%2==0) {
+				event.getListenerActor().setColor(Color.BLUE);
+			} else {
+				event.getListenerActor().setColor(Color.RED);
+			}
+			count++;
 			return true;
-
 		}
-		/*@Override
-		public void touchUp(InputEvent event, float x, float y, int pointer, int button){
-			event.getListenerActor().setSize(120,120);
-		}*/
+
 
 	}
 
