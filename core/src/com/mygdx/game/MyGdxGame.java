@@ -66,7 +66,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	}
 
-	class Dot extends Actor {
+	class Dot extends Actor { //invisible
 
 		@Override
 		public void draw(Batch batch, float parentAlpha) {
@@ -87,9 +87,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 
 	}
-	class Red extends Dot{}
-
-	class Blue extends Dot{}
+	class Red extends Dot{} class Blue extends Dot{} //material
 
 	public void initDots(){
 		for (int n1=0; n1 < 8; n1++) {
