@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import static com.badlogic.gdx.scenes.scene2d.InputEvent.Type.touchUp;
+import static com.badlogic.gdx.scenes.scene2d.ui.Table.Debug.actor;
 
 
 public class MyGdxGame extends ApplicationAdapter {
@@ -32,17 +33,31 @@ public class MyGdxGame extends ApplicationAdapter {
 	Stage stage;
 	Viewport viewport;
 	Texture red;
-	Actor reddot;
-	int count;
+	public int count=0;
 
-	class ActorListener extends InputListener {
+
+
+
+	class DotListener extends InputListener {
 		@Override
 		public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
-			//event.getListenerActor().setSize(80, 80);
+			event.getListenerActor().remove();
+			float xx = event.getListenerActor().getX();
+			float yy = event.getListenerActor().getY();
 			if (count%2==0) {
-				event.getListenerActor().setColor(Color.BLUE);
+				Red r = new Red();
+				r.setSize(40,40);
+				r.setPosition(xx,yy);
+				r.setColor(Color.RED);
+				stage.addActor(r);
+
+
 			} else {
-				event.getListenerActor().setColor(Color.RED);
+				Blue b = new Blue();
+				b.setSize(40,40);
+				b.setPosition(xx,yy);
+				b.setColor(Color.BLUE);
+				stage.addActor(b);
 			}
 			count++;
 			return true;
@@ -50,7 +65,6 @@ public class MyGdxGame extends ApplicationAdapter {
 
 
 	}
-
 
 	class Dot extends Actor {
 
@@ -69,22 +83,25 @@ public class MyGdxGame extends ApplicationAdapter {
 			batch.draw(dotimg, getX(), getY(), getWidth(), getHeight());
 			batch.setColor(r, g, b, a);
 		}
+
+
+
 	}
-	class RedDot extends Actor {
-		@Override
-		public  void draw(Batch batch, float parentAlpha){
-			batch.draw(red, getX(), getY(), getWidth(), getHeight());
-		}
-	}
+	class Red extends Dot{}
+
+	class Blue extends Dot{}
+
 	public void initDots(){
 		for (int n1=0; n1 < 8; n1++) {
 			for (int n = 0; n < 14; n++) {
 
 				dot = new Dot();
-				dot.addListener(new ActorListener());
+				dot.addListener(new DotListener());
 				dot.setSize(40, 40);
+				dot.setColor(255,255,255,1);
 				dot.setPosition(120-20 + n * (120), 120-20 + n1 * (120));
 				stage.addActor(dot);
+
 			}
 		}
 	}
@@ -100,13 +117,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		camera.setToOrtho(true, 1920, 1080);
 		viewport = new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		stage = new Stage(viewport, batch);
-		dot = new Dot();
 		Gdx.input.setInputProcessor(stage);
 		initDots();
-		reddot = new RedDot();
-		reddot.setPosition(0,0);
-		reddot.setSize(120,120);
-		reddot.setColor(247,2,2,1);
+
 
 
 		/*(dot.setSize(40,40);
