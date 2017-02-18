@@ -43,7 +43,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			return false;
 		}
 	}
-	public int[][] AroundDotsChecking(Dot a[][] ,int x,int y){ //finished on output array with next dots.
+	public int[][] AroundDotsChecking(Dot a[][] ,int x,int y){ //finished. //he is outputing next dots.
 		int ex[]=new int[3];
 		ex[0]=x-1;
 		ex[1]=x;
