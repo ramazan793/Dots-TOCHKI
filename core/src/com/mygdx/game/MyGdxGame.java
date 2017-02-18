@@ -112,7 +112,6 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void create() {
 		batch = new SpriteBatch();
 		dotimg = new Texture("circle.png");
-		red = new Texture("white.png");
 		camera = new OrthographicCamera();
 		camera.setToOrtho(true, 1920, 1080);
 		viewport = new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
