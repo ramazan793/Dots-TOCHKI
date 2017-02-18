@@ -17,20 +17,60 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MyGdxGame extends ApplicationAdapter {
 	SpriteBatch batch;
 	Texture dotimg;
 	OrthographicCamera camera;
 	Actor dot;
-	BitmapFont out;
 	Stage stage;
 	Viewport viewport;
 	public int count=0;
 	Texture backg;
-	ArrayList<Red> reddots;
-	int ind;
+	int indx;
 	BitmapFont font;
+	int indy;
+	int vert = 19;
+	int horiz = 26;
+	Red[][] reddots = new Red[vert][horiz];
+	Blue[][] bluedots = new Blue[vert][horiz];
+
+	public boolean IndexExistanceChecking(Dot a[][],int x,int y){
+		if (a[y][x]!=null){
+			return true;
+		} else {
+			return false;
+		}
+	}
+	public int[][] AroundDotsChecking(Dot a[][] ,int x,int y){ //finished on output array with next dots.
+		int ex[]=new int[3];
+		ex[0]=x-1;
+		ex[1]=x;
+		ex[2]=x+1;
+		int ey[]=new int[3];
+		ey[0]=y-1;
+		ey[1]=y;
+		ey[2]=y+1;
+		int cy=0,cx=0;
+		int s[][]=new int[cy][cx];
+		for (int i=0; i < 3; i++) {
+			for (int i2 = 0; i2 < 3; i++) {
+
+				if (IndexExistanceChecking(a, ex[i], ey[i2]) && ex[i]!=ex[i2]) {
+					s[cy][cx]=ey[i2];
+					cx++;
+					s[cy][cx]=ex[i];
+					cy++;
+				}
+			}
+		}
+		if (cy==0) {
+			return null;
+		} else {
+			return s;
+		}
+	}
 
 
 
@@ -40,13 +80,14 @@ public class MyGdxGame extends ApplicationAdapter {
 			event.getListenerActor().remove();
 			float xx = event.getListenerActor().getX();
 			float yy = event.getListenerActor().getY();
-			ind = ((int)xx-46)/69;
+			indx = (((int)xx-46)/69)+1;
+			indy = (((int)yy-38)/(int)57.5)+1;
 			if (count%2==0) {
 				Red r = new Red();
 				r.setSize(30,30);
 				r.setPosition(xx,yy);
 				r.setColor(Color.RED);
-				//reddots.add(ind,r);
+				reddots[indy][indx]=r;
 				stage.addActor(r);
 
 
@@ -55,6 +96,7 @@ public class MyGdxGame extends ApplicationAdapter {
 				b.setSize(30,30);
 				b.setPosition(xx,yy);
 				b.setColor(Color.BLUE);
+				bluedots[indy][indx]=b;
 				stage.addActor(b);
 			}
 			count++;
@@ -116,8 +158,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		Gdx.input.setInputProcessor(stage);
 		initDots();
 		font = new BitmapFont();
-		reddots =  new ArrayList();
-
+		font.setColor(Color.RED);
 
 
 
@@ -126,14 +167,13 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	}
 
-	//длин 60п между точками dotimg 40x40
 	@Override
 	public void render() {
 		Gdx.gl.glClearColor(255, 255, 255, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
 		batch.draw(backg,0,0,1920,1080);
-		font.draw(batch, "ind", 100, 100);
+		font.draw(batch, "X: "+indx+" Y: "+indy+"Own: " + IndexExistanceChecking(reddots,1,1), 100, 100);
 		batch.end();
 		stage.draw();
 		stage.act(Gdx.graphics.getDeltaTime());
@@ -143,6 +183,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void dispose() {
 		batch.dispose();
 		dotimg.dispose();
+		stage.dispose();
 	}
 }
 
