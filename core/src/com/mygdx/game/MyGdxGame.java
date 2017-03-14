@@ -36,14 +36,14 @@ public class MyGdxGame extends ApplicationAdapter {
 	Red[][] reddots = new Red[vert][horiz];
 	Blue[][] bluedots = new Blue[vert][horiz];
 
-	public boolean IndexExistanceChecking(Dot a[][],int x,int y){
+	public boolean IndexExistanceChecking(Dot a[][],float x,float y){
 		if (a[y][x]!=null){
 			return true;
 		} else {
 			return false;
 		}
 	}
-	public int[][] AroundDotsChecking(Dot a[][] ,int x,int y){ //finished. //he is outputing next dots.
+	/*public int[][] AroundDotsChecking(Dot a[][] ,int x,int y){ //finished. //he is outputing next dots.
 		int ex[]=new int[3];
 		ex[0]=x-1;
 		ex[1]=x;
@@ -54,6 +54,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		ey[2]=y+1;
 		int cy=0,cx=0;
 		int s[][]=new int[cy][cx];
+
 		for (int i=0; i < 3; i++) {
 			for (int i2 = 0; i2 < 3; i++) {
 
@@ -69,6 +70,53 @@ public class MyGdxGame extends ApplicationAdapter {
 			return null;
 		} else {
 			return s;
+		}
+	} */
+	public AroundDotsChecking(Dot a){ //finished. //he is outputing next dots.
+		int x = a.getMyX();
+		int y = a.getMyY();
+		int ex[]=new int[3];
+		ex[0]=x-1;
+		ex[1]=x;
+		ex[2]=x+1;
+		int ey[]=new int[3];
+		ey[0]=y-1;
+		ey[1]=y;
+		ey[2]=y+1;
+		int count=0;
+		int dots[] = new int[18];
+		ArrayList<Dot> history = new ArrayList<Dot>();
+		history.add(a);
+		if (a.getClass() == Red.class) {
+			for (int i = 0; i < 3; i++) {
+				for (int i2 = 0; i2 < 3; i++) {
+					if (IndexExistanceChecking(reddots, ex[i], ey[i2]) && ex[i] != ex[i2]) {
+						dots[count] = ex[i2];
+						count++;
+						dots[count] = ey[i];
+					}
+					if (count != 9) count++;
+					else count = +2;
+				}
+			}
+		} else {
+			for (int i = 0; i < 3; i++) {
+				for (int i2 = 0; i2 < 3; i++) {
+
+					if (IndexExistanceChecking(bluedots, ex[i], ey[i2]) && ex[i] != ex[i2]) {
+						dots[count] = ex[i2];
+						count++;
+						dots[count] = ey[i];
+					}
+					if (count != 9) count++;
+					else count = +2;
+				}
+			}
+		}
+		for (int i = 0; i < 18;i++) {
+			int DotsX=dots[i];
+			int DotsY=dots[i+1];
+			return AroundDotsChecking(reddots[DotsX][DotsY]);
 		}
 	}
 
@@ -87,7 +135,9 @@ public class MyGdxGame extends ApplicationAdapter {
 				r.setSize(30,30);
 				r.setPosition(xx,yy);
 				r.setColor(Color.RED);
-				reddots[indy][indx]=r;
+				r.setMyX(indx);
+				r.setMyY(indy);
+				reddots[indx][indy]=r;
 				stage.addActor(r);
 
 
@@ -96,7 +146,9 @@ public class MyGdxGame extends ApplicationAdapter {
 				b.setSize(30,30);
 				b.setPosition(xx,yy);
 				b.setColor(Color.BLUE);
-				bluedots[indy][indx]=b;
+				b.setMyX(indx);
+				b.setMyY(indy);
+				bluedots[indx][indy]=b;
 				stage.addActor(b);
 			}
 			count++;
@@ -107,7 +159,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	}
 
 	class Dot extends Actor { //invisible
-
+		int X;
+		int Y;
 		@Override
 		public void draw(Batch batch, float parentAlpha) {
 			Color batchColor = batch.getColor();
@@ -123,11 +176,24 @@ public class MyGdxGame extends ApplicationAdapter {
 			batch.draw(dotimg, getX(), getY(), getWidth(), getHeight());
 			batch.setColor(r, g, b, a);
 		}
+		void setMyX(float x){
+			this.X=(int)x;
+		}
+		int getMyX(){
+			return X;
+		}
+		void setMyY(float y){
+			this.Y=(int)y;
+		}
+		int getMyY(){
+			return Y;
+		}
 
 
 
 	}
-	class Red extends Dot{} class Blue extends Dot{} //material
+	class Red extends Dot{}
+	class Blue extends Dot{}
 
 	public void initDots(){
 		for (int n1=0; n1 < 18; n1++) {
@@ -143,8 +209,6 @@ public class MyGdxGame extends ApplicationAdapter {
 			}
 		}
 	}
-
-
 
 	@Override
 	public void create() {
@@ -173,7 +237,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
 		batch.draw(backg,0,0,1920,1080);
-		font.draw(batch, "X: "+indx+" Y: "+indy+"Own: " + IndexExistanceChecking(reddots,1,1), 100, 100);
+		font.draw(batch, "X: "+indx+" Y: "+indy, 100, 100);
 		batch.end();
 		stage.draw();
 		stage.act(Gdx.graphics.getDeltaTime());
