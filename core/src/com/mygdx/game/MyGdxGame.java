@@ -36,8 +36,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	Red[][] reddots = new Red[vert][horiz];
 	Blue[][] bluedots = new Blue[vert][horiz];
 
-	public boolean IndexExistanceChecking(Dot a[][],float x,float y){
-		if (a[y][x]!=null){
+	public boolean IndexExistanceChecking(Dot a[][],int x,int y){
+		if (a[x][y]!=null){
 			return true;
 		} else {
 			return false;
@@ -72,7 +72,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			return s;
 		}
 	} */
-	public AroundDotsChecking(Dot a){ //finished. //he is outputing next dots.
+	public void AroundDotsChecking(Dot a){ //finished. //he is outputing next dots.
 		int x = a.getMyX();
 		int y = a.getMyY();
 		int ex[]=new int[3];
@@ -87,6 +87,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		int dots[] = new int[18];
 		ArrayList<Dot> history = new ArrayList<Dot>();
 		history.add(a);
+		
 		if (a.getClass() == Red.class) {
 			for (int i = 0; i < 3; i++) {
 				for (int i2 = 0; i2 < 3; i++) {
@@ -116,7 +117,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		for (int i = 0; i < 18;i++) {
 			int DotsX=dots[i];
 			int DotsY=dots[i+1];
-			return AroundDotsChecking(reddots[DotsX][DotsY]);
+			AroundDotsChecking(reddots[DotsX][DotsY]);
 		}
 	}
 
