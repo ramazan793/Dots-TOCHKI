@@ -6,10 +6,16 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.RenderableShapeBuilder;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -17,7 +23,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import java.util.ArrayList;
-import java.util.Arrays;
+
+import javax.sound.sampled.Line;
+
+import sun.rmi.runtime.Log;
+import sun.security.provider.SHA;
 
 public class MyGdxGame extends ApplicationAdapter {
 	SpriteBatch batch;
@@ -26,130 +36,215 @@ public class MyGdxGame extends ApplicationAdapter {
 	Actor dot;
 	Stage stage;
 	Viewport viewport;
-	public int count=0;
+	public int count = 0;
 	Texture backg;
 	int indx;
 	BitmapFont font;
 	int indy;
-	int vert = 19;
-	int horiz = 26;
+	int vert = 30;
+	int horiz = 18;
 	Red[][] reddots = new Red[vert][horiz];
 	Blue[][] bluedots = new Blue[vert][horiz];
 
-	public boolean IndexExistanceChecking(Dot a[][],int x,int y){
-		if (a[x][y]!=null){
+
+	public static class drawer {
+		static ShapeRenderer drawer = new ShapeRenderer();
+
+		public static void line(Vector2 start, Vector2 end, int lineWidth, Color color) {
+			Gdx.gl.glLineWidth(lineWidth);
+			drawer.begin(ShapeRenderer.ShapeType.Line);
+			drawer.setColor(color);
+			drawer.line(start, end);
+			drawer.end();
+
+		}
+	}
+
+	public boolean IndexExistanceChecking(Dot a[][], int x, int y) {
+		if (a[x][y] != null) {
 			return true;
 		} else {
 			return false;
 		}
 	}
-	/*public int[][] AroundDotsChecking(Dot a[][] ,int x,int y){ //finished. //he is outputing next dots.
-		int ex[]=new int[3];
-		ex[0]=x-1;
-		ex[1]=x;
-		ex[2]=x+1;
-		int ey[]=new int[3];
-		ey[0]=y-1;
-		ey[1]=y;
-		ey[2]=y+1;
-		int cy=0,cx=0;
-		int s[][]=new int[cy][cx];
 
-		for (int i=0; i < 3; i++) {
-			for (int i2 = 0; i2 < 3; i++) {
-
-				if (IndexExistanceChecking(a, ex[i], ey[i2]) && ex[i]!=ex[i2]) {
-					s[cy][cx]=ey[i2];
-					cx++;
-					s[cy][cx]=ex[i];
-					cy++;
-				}
-			}
+	public boolean proximity(Dot a, Dot b) {
+		int x = a.getMyX();
+		int x2 = b.getMyX();
+		int y = a.getMyY();
+		int y2 = b.getMyY();
+		if (Math.abs(x - x2) < 2 && Math.abs(y - y2) < 2) {
+			return true;
 		}
-		if (cy==0) {
-			return null;
-		} else {
-			return s;
-		}
-	} */
-	public void AroundDotsChecking(Dot a){ //finished. //he is outputing next dots.
+		return false;
+	}
+	/*public void  AroundDotsChecking (Dot a,ArrayList<Dot> history){ //finished. //he is outputing next dots.
 		int x = a.getMyX();
 		int y = a.getMyY();
-		int ex[]=new int[3];
-		ex[0]=x-1;
-		ex[1]=x;
-		ex[2]=x+1;
-		int ey[]=new int[3];
-		ey[0]=y-1;
-		ey[1]=y;
-		ey[2]=y+1;
-		int count=0;
+		int ex[] = new int[3];
+		ex[0] = x - 1;
+		ex[1] = x;
+		ex[2] = x + 1;
+		int ey[] = new int[3];
+		ey[0] = y - 1;
+		ey[1] = y;
+		ey[2] = y + 1;
+		int count = 0;
 		int dots[] = new int[18];
-		ArrayList<Dot> history = new ArrayList<Dot>();
 		history.add(a);
-		
-		if (a.getClass() == Red.class) {
-			for (int i = 0; i < 3; i++) {
-				for (int i2 = 0; i2 < 3; i++) {
-					if (IndexExistanceChecking(reddots, ex[i], ey[i2]) && ex[i] != ex[i2]) {
-						dots[count] = ex[i2];
-						count++;
-						dots[count] = ey[i];
+		Gdx.app.log("AHAHAHA","asdasdsadasd");
+
+		if ((a.getMyX()!=history.get(0).getMyX()) && (a.getMyY()!=history.get(0).getMyX())) {
+			if (a.getClass() == Red.class) {
+				for (int i = 0; i < 3; i++) {
+					for (int i2 = 0; i2 < 3; i++) {
+						if (IndexExistanceChecking(reddots, ex[i], ey[i2]) && ex[i] != ex[i2]) {
+							dots[count] = ex[i2];
+							count++;
+							dots[count] = ey[i];
+						}
+						if (count != 9) count++;
+						else count = +2;
 					}
-					if (count != 9) count++;
-					else count = +2;
+				}
+				for (int i = 0; i < 18; i+=2) {
+					int DotsX = dots[i];
+					int DotsY = dots[i + 1];
+					AroundDotsChecking(reddots[DotsX][DotsY], history);
+					Gdx.app.log("LOL","lol");
+				}
+			} else {
+				for (int i = 0; i < 3; i++) {
+					for (int i2 = 0; i2 < 3; i++) {
+
+						if (IndexExistanceChecking(bluedots, ex[i], ey[i2]) && ex[i] != ex[i2]) {
+							dots[count] = ex[i2];
+							count++;
+							dots[count] = ey[i];
+						}
+						if (count != 9) count++;
+						else count = +2;
+					}
+				}
+				for (int i = 0; i < 18; i+=2) {
+					int DotsX = dots[i];
+					int DotsY = dots[i + 1];
+					AroundDotsChecking(bluedots[DotsX][DotsY], history);
+				}
+			}
+
+		} else if ((a.getMyX()==history.get(0).getMyX()) && (a.getMyY()==history.get(0).getMyX())) {
+
+		} else if ((a.getMyX()!=history.get(0).getMyX()) && (a.getMyY()!=history.get(0).getMyX())&&(dots==null)){
+			history.removeAll(history);
+		}
+	}
+	*/
+
+	public ArrayList<Dot> AroundDotsChecking(Dot a, ArrayList<Dot> history,int acc) { //finished. //he is outputing next dots.
+		int x = a.getMyX();
+		int y = a.getMyY();
+		int ex[] = new int[3];
+		ex[0] = x - 1;
+		ex[1] = x;
+		ex[2] = x + 1;
+		int ey[] = new int[3];
+		ey[0] = y - 1;
+		ey[1] = y;
+		ey[2] = y + 1;
+		int count = 0;
+		history.add(a);
+		a.setStatus(true);
+		acc++;
+		if (a.getClass() == Red.class) {  //заменил тернарным оператором.
+			for (int i2 = 2; i2 >= 0; i2--) {
+				for (int i = 0; i < 3; i++) {
+					if (IndexExistanceChecking(reddots, ex[i], ey[i2]) && reddots[ex[i]][ey[i2]].status == false) { //условие существования и незакрашенности
+						count++;
+						Gdx.app.log(Integer.toString(ex[i]) + ":" + Integer.toString(ey[i2]), " -- Прошёл проверку условий");
+						return AroundDotsChecking(a.getClass()== Red.class ? reddots[ex[i]][ey[i2]] : bluedots[ex[i]][ey[i2]], history,acc);
+					}
 				}
 			}
 		} else {
-			for (int i = 0; i < 3; i++) {
-				for (int i2 = 0; i2 < 3; i++) {
-
-					if (IndexExistanceChecking(bluedots, ex[i], ey[i2]) && ex[i] != ex[i2]) {
-						dots[count] = ex[i2];
+			for (int i2 = 2; i2 >= 0; i2--) {
+				for (int i = 0; i < 3; i++) {
+					if (IndexExistanceChecking(bluedots, ex[i], ey[i2]) && bluedots[ex[i]][ey[i2]].status == false) { //условие существования и незакрашенности
+						Gdx.app.log(Integer.toString(ex[i]) + ":" + Integer.toString(ey[i2]), " -- Прошёл проверку условий");
 						count++;
-						dots[count] = ey[i];
+						return AroundDotsChecking(bluedots[ex[i]][ey[i2]], history,acc);
 					}
-					if (count != 9) count++;
-					else count = +2;
 				}
 			}
 		}
-		for (int i = 0; i < 18;i++) {
-			int DotsX=dots[i];
-			int DotsY=dots[i+1];
-			AroundDotsChecking(reddots[DotsX][DotsY]);
+		if (((a.getMyX() == history.get(0).getMyX() && a.getMyY() == history.get(0).getMyY()) || (proximity(a, history.get(0)))) && (acc > 2)) {
+			Gdx.app.log(Integer.toString(history.size()), "Замкнулся");
+			return history;
 		}
+
+		if (count == 0) {
+			for (int i = 0; i < history.size(); i++) {
+				history.get(i).setStatus(false);
+			}
+			history.clear();
+
+			return null;
+
+
+		}
+
+		return null;
 	}
 
+
+	public void algo(Dot a) {
+		ArrayList<Dot> history = new ArrayList<Dot>();
+		int acc = 0;
+		AroundDotsChecking(a, history,acc);
+		if (history.size() > 0) {
+			for (int i = 0; i < history.size(); i++) {
+				if (i !=history.size()-1) {
+					drawer.line(new Vector2(history.get(0 + i).getX()+10, history.get(0 + i).getY()+10), new Vector2(history.get(1 + i).getX()+10, history.get(1 + i).getY()+10), 8, a.getClass() == Red.class ? Color.RED : Color.BLUE);
+					Gdx.app.log("Line", "Закрашена линия");
+				} else{
+					drawer.line(new Vector2(history.get(history.size()-1).getX()+10, history.get(history.size()-1).getY()+10), new Vector2(history.get(0).getX()+10, history.get(0).getY()+10), 8, a.getClass() == Red.class ? Color.RED : Color.BLUE);
+				}
+			}
+		}
+
+		Gdx.app.log("END", "End");
+		//drawer.line(new Vector2 (history.get(0).getX(),history.get(0).getY()),new Vector2 (history.get(1).getX(),history.get(1).getY()), 10, Color.BLUE);
+		//drawer.line(new Vector2(1,1),new Vector2(100,100),10,Color.CYAN);
+	}
 
 
 	class DotListener extends InputListener {
 		@Override
-		public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
+		public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 			event.getListenerActor().remove();
 			float xx = event.getListenerActor().getX();
 			float yy = event.getListenerActor().getY();
-			indx = (((int)xx-46)/69)+1;
-			indy = (((int)yy-38)/(int)57.5)+1;
-			if (count%2==0) {
+			indx = ((int) xx  / 60) + 1;
+			indy = ((int) yy  / 60) + 1;
+			if (count % 2 == 0) {
 				Red r = new Red();
-				r.setSize(30,30);
-				r.setPosition(xx,yy);
+				r.setSize(24, 24);
+				r.setPosition(xx, yy);
 				r.setColor(Color.RED);
 				r.setMyX(indx);
 				r.setMyY(indy);
-				reddots[indx][indy]=r;
+				reddots[indx][indy] = r;
 				stage.addActor(r);
 
 
 			} else {
 				Blue b = new Blue();
-				b.setSize(30,30);
-				b.setPosition(xx,yy);
+				b.setSize(24, 24);
+				b.setPosition(xx, yy);
 				b.setColor(Color.BLUE);
 				b.setMyX(indx);
 				b.setMyY(indy);
-				bluedots[indx][indy]=b;
+				bluedots[indx][indy] = b;
 				stage.addActor(b);
 			}
 			count++;
@@ -159,9 +254,12 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	}
 
+
 	class Dot extends Actor { //invisible
 		int X;
 		int Y;
+		boolean status = false;
+
 		@Override
 		public void draw(Batch batch, float parentAlpha) {
 			Color batchColor = batch.getColor();
@@ -177,36 +275,61 @@ public class MyGdxGame extends ApplicationAdapter {
 			batch.draw(dotimg, getX(), getY(), getWidth(), getHeight());
 			batch.setColor(r, g, b, a);
 		}
-		void setMyX(float x){
-			this.X=(int)x;
+
+		void setMyX(float x) {
+			this.X = (int) x;
 		}
-		int getMyX(){
+
+		int getMyX() {
 			return X;
 		}
-		void setMyY(float y){
-			this.Y=(int)y;
+
+		void setMyY(float y) {
+			this.Y = (int) y;
 		}
-		int getMyY(){
+
+		int getMyY() {
 			return Y;
 		}
 
-
-
+		void setStatus(boolean b) {
+			this.status = b;
+		}
 	}
+
+
+
 	class Red extends Dot{}
 	class Blue extends Dot{}
 
 	public void initDots(){
 		for (int n1=0; n1 < 18; n1++) {
-			for (int n = 0; n < 25; n++) {
+			for (int n = 0; n < 32; n++) {
 
 				dot = new Dot();
 				dot.addListener(new DotListener());
 				dot.setSize(35, 35);
-				dot.setPosition(61-15 + n * (69), 53-15 + n1 * ((float)57.5));
+				dot.setPosition(60-13 + n * (60), 60-13 + n1 * 60);
 				dot.setColor(0,0,0,0);
 				stage.addActor(dot);
 
+			}
+		}
+	}
+	public void field() {
+		for (int y = 0; y < 18; y++) {
+			drawer.line(new Vector2(0, y * 60), new Vector2(1920, y * 60), 3, Color.SKY);
+		}
+		for (int x = 0; x < 32;x++){
+			drawer.line(new Vector2(60*x, 0), new Vector2(60*x, 1080), 3, Color.SKY);
+		}
+	}
+	public void checker(){
+		for (int y = 0; y < 18; y++) {
+			for (int x = 0; x < 30; x++) {
+				String a;
+				if (reddots[x][y] != null) { algo(reddots[x][y]); }
+				if (bluedots[x][y] != null) { algo(bluedots[x][y]); }
 			}
 		}
 	}
@@ -214,10 +337,12 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override
 	public void create() {
 		batch = new SpriteBatch();
-		dotimg = new Texture("circle.png");
+		Circle circles = new Circle();
+		dotimg = new Texture("krug.png");
 		backg = new Texture("backg.jpg");
 		camera = new OrthographicCamera();
 		camera.setToOrtho(true, 1920, 1080);
+		camera.update();
 		viewport = new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		stage = new Stage(viewport, batch);
 		Gdx.input.setInputProcessor(stage);
@@ -227,21 +352,24 @@ public class MyGdxGame extends ApplicationAdapter {
 
 
 
-
-
-
 	}
 
 	@Override
 	public void render() {
-		Gdx.gl.glClearColor(255, 255, 255, 1);
+		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		//Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+		field();
+		checker();
 		batch.begin();
-		batch.draw(backg,0,0,1920,1080);
+		//drawer.line(new Vector2(0,60),new Vector2(1920,60),5,Color.BLUE);
 		font.draw(batch, "X: "+indx+" Y: "+indy, 100, 100);
 		batch.end();
 		stage.draw();
 		stage.act(Gdx.graphics.getDeltaTime());
+		//Gdx.gl.glDisable(GL20.GL_BLEND);
+
 	}
 
 	@Override
