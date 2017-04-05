@@ -168,7 +168,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	//drawer.line(new Vector2(outline.get(i + u > 0 ? wall.get(u - 1) + 1 : 0).getX() + 10, outline.get(i + u > 0 ? wall.get(u - 1) + 1 : 0).getY() + 10), new Vector2(outline.get(i + 1 + u > 0 ? wall.get(u - 1) + 1 : 0).getX() + 10, outline.get(1 + i + u > 0 ? wall.get(u - 1) + 1 : 0).getY() + 10), 8, outline.get(0).getClass() == Red.class ? Color.RED : Color.BLUE);
 	public void drawoutline(){
 	int sum = 0;
-		for (int u = 0; u < wall.size();u++) { Gdx.app.log(Integer.toString(wall.size()),"-Size wall");
+		for (int u = 0; u < wall.size();u++) { 
 			sum+=wall.get(u)+1;
 			for (int i = 0; i < wall.get(u)+1; i++) {Gdx.app.log(Integer.toString(outline.size()),"-Кол-во точек в аутлайне"); // wall.get(u)=history.size()-1;
 				if (i != wall.get(u)) {
