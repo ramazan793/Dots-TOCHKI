@@ -42,9 +42,12 @@ public class MyGdxGame extends ApplicationAdapter {
 	BitmapFont font;
 	int indy;
 	int vert = 32;
-	int horiz = 18;
+	int horiz = 19;
 	Red[][] reddots = new Red[vert][horiz];
 	Blue[][] bluedots = new Blue[vert][horiz];
+	ArrayList<Dot> outline = new ArrayList<Dot>();
+	ArrayList<Integer> wall = new ArrayList<Integer>();
+	int sum = 0;
 
 
 	public static class drawer { // класс чертежник
@@ -100,7 +103,7 @@ public class MyGdxGame extends ApplicationAdapter {
 					if (IndexExistanceChecking(reddots, ex[i], ey[i2]) && reddots[ex[i]][ey[i2]].status == false) { //условие существования и незакрашенности
 						count++;
 						Gdx.app.log(Integer.toString(ex[i]) + ":" + Integer.toString(ey[i2]), " -- Прошёл проверку условий");
-						return AroundDotsChecking(a.getClass()== Red.class ? reddots[ex[i]][ey[i2]] : bluedots[ex[i]][ey[i2]], history,acc);
+						return AroundDotsChecking(reddots[ex[i]][ey[i2]], history,acc);
 					}
 				}
 			}
@@ -130,26 +133,60 @@ public class MyGdxGame extends ApplicationAdapter {
 
 
 		}
-
+		for (int i = 0; i < history.size(); i++) {
+			history.get(i).setStatus(false);
+		}
+		history.clear();
 		return null;
 	}
 
 
 	public void algo(Dot a) { // сам алгоритм
-		ArrayList<Dot> history = new ArrayList<Dot>();
-		int acc = 0;
-		AroundDotsChecking(a, history,acc);
-		if (history.size() > 0) {
-			for (int i = 0; i < history.size(); i++) { // прорисовка контура
-				if (i !=history.size()-1) {
-					drawer.line(new Vector2(history.get(0 + i).getX()+10, history.get(0 + i).getY()+10), new Vector2(history.get(1 + i).getX()+10, history.get(1 + i).getY()+10), 8, a.getClass() == Red.class ? Color.RED : Color.BLUE);
-					Gdx.app.log("Контур", "Нарисован");
-				} else{
-					drawer.line(new Vector2(history.get(history.size()-1).getX()+10, history.get(history.size()-1).getY()+10), new Vector2(history.get(0).getX()+10, history.get(0).getY()+10), 8, a.getClass() == Red.class ? Color.RED : Color.BLUE);
+		if (a.status == false) {
+			ArrayList<Dot> history = new ArrayList<Dot>();
+			int acc = 0;
+			AroundDotsChecking(a, history, acc);
+			if (history.size() > 0) {
+				for (int i = 0; i < history.size(); i++) { // прорисовка контура
+					if (i != history.size() - 1) {
+						//drawer.line(new Vector2(history.get(0 + i).getX()+10, history.get(0 + i).getY()+10), new Vector2(history.get(1 + i).getX()+10, history.get(1 + i).getY()+10), 8, a.getClass() == Red.class ? Color.RED : Color.BLUE);
+						Gdx.app.log("Добавлено", "в контур");
+						outline.add(history.get(i));
+					} else {
+						//drawer.line(new Vector2(history.get(history.size()-1).getX()+10, history.get(history.size()-1).getY()+10), new Vector2(history.get(0).getX()+10, history.get(0).getY()+10), 8, a.getClass() == Red.class ? Color.RED : Color.BLUE);
+						wall.add(i);
+					}
+
 				}
+				outline.add(history.get(history.size() - 1));
+
 			}
 		}
+
 		Gdx.app.log("END", "End");
+	}
+	//drawer.line(new Vector2(outline.get(i + u > 0 ? wall.get(u - 1) + 1 : 0).getX() + 10, outline.get(i + u > 0 ? wall.get(u - 1) + 1 : 0).getY() + 10), new Vector2(outline.get(i + 1 + u > 0 ? wall.get(u - 1) + 1 : 0).getX() + 10, outline.get(1 + i + u > 0 ? wall.get(u - 1) + 1 : 0).getY() + 10), 8, outline.get(0).getClass() == Red.class ? Color.RED : Color.BLUE);
+	public void drawoutline(){
+	int sum = 0;
+		for (int u = 0; u < wall.size();u++) { Gdx.app.log(Integer.toString(wall.size()),"-Size wall");
+			sum+=wall.get(u)+1;
+			for (int i = 0; i < wall.get(u)+1; i++) {Gdx.app.log(Integer.toString(outline.size()),"-Кол-во точек в аутлайне"); // wall.get(u)=history.size()-1;
+				if (i != wall.get(u)) {
+					if (u > 0) {
+						drawer.line(new Vector2(outline.get(i + sum-1-wall.get(u) ).getX() + 10, outline.get(i +  sum-1-wall.get(u) ).getY() + 10), new Vector2(outline.get(i  +  sum-wall.get(u)).getX() + 10, outline.get( i +  sum-wall.get(u) ).getY() + 10), 8, outline.get(i + sum-1-wall.get(u)  ).getClass() == Red.class ? Color.RED : Color.BLUE);
+					} else {
+						drawer.line(new Vector2(outline.get(i + 0).getX() + 10, outline.get(i + 0).getY() + 10), new Vector2(outline.get(i + 1).getX() + 10, outline.get(1 + i).getY() + 10), 8, outline.get(0).getClass() == Red.class ? Color.RED : Color.BLUE);
+					}
+				} else {
+					if (u > 0) {
+						drawer.line(new Vector2(outline.get(i +  sum-1-wall.get(u) ).getX() + 10, outline.get(i +  sum-1-wall.get(u) ).getY() + 10), new Vector2(outline.get(  sum-1-wall.get(u)).getX() + 10, outline.get( sum-wall.get(u)-1).getY() + 10), 8, outline.get(i + sum-1-wall.get(u)  ).getClass() == Red.class ? Color.RED : Color.BLUE);
+					} else {
+						drawer.line(new Vector2(outline.get(i + 0).getX() + 10, outline.get(i + 0).getY() + 10), new Vector2(outline.get(0).getX() + 10, outline.get(0).getY() + 10), 8, outline.get(0).getClass() == Red.class ? Color.RED : Color.BLUE);
+					}
+				}
+			}
+
+		}
 	}
 
 
@@ -185,8 +222,6 @@ public class MyGdxGame extends ApplicationAdapter {
 			count++;
 			return true;
 		}
-
-
 	}
 
 
@@ -293,10 +328,13 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void render() { // ненавижу его
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+		//Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		field();
-		checker(); // проверятор
+		checker();
+		drawoutline();
+
 		batch.begin();
+
 		font.draw(batch, "X: "+indx+" Y: "+indy, 100, 100);
 		batch.end();
 		stage.draw();
