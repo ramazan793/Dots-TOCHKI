@@ -41,10 +41,10 @@ public class MyGdxGame extends ApplicationAdapter {
 	int indx;
 	BitmapFont font;
 	int indy;
-	int vert = 32;
-	int horiz = 19;
-	Red[][] reddots = new Red[vert][horiz];
-	Blue[][] bluedots = new Blue[vert][horiz];
+	int vert = 19;
+	int horiz = 32;
+	Red[][] reddots = new Red[horiz][vert];
+	Blue[][] bluedots = new Blue[horiz][vert];
 	ArrayList<Dot> outline = new ArrayList<Dot>();
 	ArrayList<Integer> wall = new ArrayList<Integer>();
 	int sum = 0;
@@ -58,6 +58,12 @@ public class MyGdxGame extends ApplicationAdapter {
 			drawer.begin(ShapeRenderer.ShapeType.Line);
 			drawer.setColor(color);
 			drawer.line(start, end);
+			drawer.end();
+		}
+		public  static void point(float x, float y){
+			drawer.begin(ShapeRenderer.ShapeType.Point);
+			drawer.setColor(Color.CHARTREUSE);
+			drawer.point(x,y,40);
 			drawer.end();
 
 		}
@@ -100,7 +106,31 @@ public class MyGdxGame extends ApplicationAdapter {
 				}
 			}
 		}
-
+	}
+	public boolean wallchecking(Dot a,Dot b){ // не универсальный. временный. нашел альтернативу в методе DRAWOUTLINE
+		int x = a.getMyX();
+		int y = a.getMyY();
+		if (b.getMyX()==x-1 &&b.getMyY()==y+1){
+			if ((IndexExistanceChecking(a.getClass()==Red.class ? bluedots : reddots,x-1,y) && (a.getClass()==Red.class ? bluedots[x-1][y].status : reddots[x-1][y].status==true )) && ((IndexExistanceChecking(a.getClass()==Red.class ? bluedots : reddots,x,y+1) && (a.getClass()==Red.class ? bluedots[x][y+1].status : reddots[x][y+1].status==true )))){
+				return true;
+			}
+		}
+		if (b.getMyX()==x+1 &&b.getMyY()==y+1){
+			if ((IndexExistanceChecking(a.getClass()==Red.class ? bluedots : reddots,x,y+1) && (a.getClass()==Red.class ? bluedots[x][y+1].status : reddots[x][y+1].status==true )) && ((IndexExistanceChecking(a.getClass()==Red.class ? bluedots : reddots,x+1,y) && (a.getClass()==Red.class ? bluedots[x+1][y].status : reddots[x+1][y].status==true )))){
+				return true;
+			}
+		}
+		if (b.getMyX()==x-1 &&b.getMyY()==y-1){
+			if ((IndexExistanceChecking(a.getClass()==Red.class ? bluedots : reddots,x,y-1) && (a.getClass()==Red.class ? bluedots[x][y-1].status : reddots[x][y-1].status==true )) && ((IndexExistanceChecking(a.getClass()==Red.class ? bluedots : reddots,x-1,y) && (a.getClass()==Red.class ? bluedots[x-1][y].status : reddots[x-1][y].status==true )))){
+				return true;
+			}
+		}
+		if (b.getMyX()==x+1 &&b.getMyY()==y-1){
+			if ((IndexExistanceChecking(a.getClass()==Red.class ? bluedots : reddots,x,y-1) && (a.getClass()==Red.class ? bluedots[x][y-1].status : reddots[x][y-1].status==true )) && ((IndexExistanceChecking(a.getClass()==Red.class ? bluedots : reddots,x+1,y) && (a.getClass()==Red.class ? bluedots[x+1][y].status : reddots[x+1][y].status==true )))){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public ArrayList<Dot> AroundDotsChecking(Dot a, ArrayList<Dot> history,int acc) { // проходит по контуру
@@ -179,6 +209,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			for (int i = 0; i < wall.get(u)+1; i++) {// wall.get(u)=history.size()-1;
 				if (i != wall.get(u)) {
 					if (u > 0) {
+						//outline.get(i + sum-1-wall.get(u) ).linking(outline.get(i  +  sum-wall.get(u)));
 						drawer.line(new Vector2(outline.get(i + sum-1-wall.get(u) ).getX() + 10, outline.get(i +  sum-1-wall.get(u) ).getY() + 10), new Vector2(outline.get(i  +  sum-wall.get(u)).getX() + 10, outline.get( i +  sum-wall.get(u) ).getY() + 10), 8, outline.get(i + sum-1-wall.get(u)  ).getClass() == Red.class ? Color.RED : Color.BLUE);
 					} else {
 						drawer.line(new Vector2(outline.get(i + 0).getX() + 10, outline.get(i + 0).getY() + 10), new Vector2(outline.get(i + 1).getX() + 10, outline.get(1 + i).getY() + 10), 8, outline.get(0).getClass() == Red.class ? Color.RED : Color.BLUE);
