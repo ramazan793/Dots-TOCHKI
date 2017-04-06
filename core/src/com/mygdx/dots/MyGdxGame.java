@@ -81,6 +81,27 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		return false;
 	}
+	public void checkunit(Dot a){
+		int x = a.getMyX();
+		int y = a.getMyY();
+		int ex[] = new int[3];
+		ex[0] = x - 1;
+		ex[1] = x;
+		ex[2] = x + 1;
+		int ey[] = new int[3];
+		ey[0] = y - 1;
+		ey[1] = y;
+		ey[2] = y + 1;
+		for (int i2 = 2; i2 >= 0; i2--) {
+			for (int i = 0; i < 3; i++) {
+				if (IndexExistanceChecking(a.getClass()==Red.class ? reddots : bluedots, ex[i], ey[i2]) ) { //условие существования и незакрашенности
+					count++;
+					if (count ==3){a.isUnit=true;break;}
+				}
+			}
+		}
+
+	}
 
 	public ArrayList<Dot> AroundDotsChecking(Dot a, ArrayList<Dot> history,int acc) { // проходит по контуру
 		int x = a.getMyX();
@@ -97,29 +118,17 @@ public class MyGdxGame extends ApplicationAdapter {
 		history.add(a);
 		a.setStatus(true);
 		acc++;
-		if (a.getClass() == Red.class) {  // для красных
 			for (int i2 = 2; i2 >= 0; i2--) {
 				for (int i = 0; i < 3; i++) {
-					if (IndexExistanceChecking(reddots, ex[i], ey[i2]) && reddots[ex[i]][ey[i2]].status == false) { //условие существования и незакрашенности
+					if (IndexExistanceChecking(a.getClass()==Red.class ? reddots : bluedots, ex[i], ey[i2]) && reddots[ex[i]][ey[i2]].status == false) { //условие существования и незакрашенности
 						count++;
 						Gdx.app.log(Integer.toString(ex[i]) + ":" + Integer.toString(ey[i2]), " -- Прошёл проверку условий");
-						return AroundDotsChecking(reddots[ex[i]][ey[i2]], history,acc);
+						return AroundDotsChecking(a.getClass() == Red.class ? reddots[ex[i]][ey[i2]] : bluedots[ex[i]][ey[i2]], history,acc);
 					}
 				}
 			}
-		} else { // для синих
-			for (int i2 = 2; i2 >= 0; i2--) {
-				for (int i = 0; i < 3; i++) {
-					if (IndexExistanceChecking(bluedots, ex[i], ey[i2]) && bluedots[ex[i]][ey[i2]].status == false) { //условие существования и незакрашенности
-						Gdx.app.log(Integer.toString(ex[i]) + ":" + Integer.toString(ey[i2]), " -- Прошёл проверку условий");
-						count++;
-						return AroundDotsChecking(bluedots[ex[i]][ey[i2]], history,acc);
-					}
-				}
-			}
-		}
+
 		if (((a.getMyX() == history.get(0).getMyX() && a.getMyY() == history.get(0).getMyY()) || (proximity(a, history.get(0)))) && (acc > 3)) { // условие завершения контура 1-совпадение координат(уже не нжуно вроде) ИЛИ близость) И больше 3 точек для контура
-			Gdx.app.log(Integer.toString(history.size()), "Замкнулся");
 			return history;
 		}
 
@@ -149,11 +158,8 @@ public class MyGdxGame extends ApplicationAdapter {
 			if (history.size() > 0) {
 				for (int i = 0; i < history.size(); i++) { // прорисовка контура
 					if (i != history.size() - 1) {
-						//drawer.line(new Vector2(history.get(0 + i).getX()+10, history.get(0 + i).getY()+10), new Vector2(history.get(1 + i).getX()+10, history.get(1 + i).getY()+10), 8, a.getClass() == Red.class ? Color.RED : Color.BLUE);
-						Gdx.app.log("Добавлено", "в контур");
 						outline.add(history.get(i));
 					} else {
-						//drawer.line(new Vector2(history.get(history.size()-1).getX()+10, history.get(history.size()-1).getY()+10), new Vector2(history.get(0).getX()+10, history.get(0).getY()+10), 8, a.getClass() == Red.class ? Color.RED : Color.BLUE);
 						wall.add(i);
 					}
 
@@ -163,14 +169,14 @@ public class MyGdxGame extends ApplicationAdapter {
 			}
 		}
 
-		Gdx.app.log("END", "End");
+
 	}
 	//drawer.line(new Vector2(outline.get(i + u > 0 ? wall.get(u - 1) + 1 : 0).getX() + 10, outline.get(i + u > 0 ? wall.get(u - 1) + 1 : 0).getY() + 10), new Vector2(outline.get(i + 1 + u > 0 ? wall.get(u - 1) + 1 : 0).getX() + 10, outline.get(1 + i + u > 0 ? wall.get(u - 1) + 1 : 0).getY() + 10), 8, outline.get(0).getClass() == Red.class ? Color.RED : Color.BLUE);
 	public void drawoutline(){
 	int sum = 0;
-		for (int u = 0; u < wall.size();u++) { 
+		for (int u = 0; u < wall.size();u++) {
 			sum+=wall.get(u)+1;
-			for (int i = 0; i < wall.get(u)+1; i++) {Gdx.app.log(Integer.toString(outline.size()),"-Кол-во точек в аутлайне"); // wall.get(u)=history.size()-1;
+			for (int i = 0; i < wall.get(u)+1; i++) {// wall.get(u)=history.size()-1;
 				if (i != wall.get(u)) {
 					if (u > 0) {
 						drawer.line(new Vector2(outline.get(i + sum-1-wall.get(u) ).getX() + 10, outline.get(i +  sum-1-wall.get(u) ).getY() + 10), new Vector2(outline.get(i  +  sum-wall.get(u)).getX() + 10, outline.get( i +  sum-wall.get(u) ).getY() + 10), 8, outline.get(i + sum-1-wall.get(u)  ).getClass() == Red.class ? Color.RED : Color.BLUE);
@@ -229,6 +235,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		int X;
 		int Y;
 		boolean status = false;
+		boolean isUnit = false;
 
 		@Override
 		public void draw(Batch batch, float parentAlpha) {
@@ -278,7 +285,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 				dot = new Dot();
 				dot.addListener(new DotListener());
-				dot.setSize(35, 35);
+				dot.setSize(50, 50);
 				dot.setPosition(60-13 + n * (60), 60-13 + n1 * 60);
 				dot.setColor(0,0,0,0);
 				stage.addActor(dot);
