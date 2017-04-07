@@ -77,6 +77,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 	}
 
+
+
 	public boolean proximity(Dot a, Dot b) { // проверяет, рядом ли лежат две точки
 		int x = a.getMyX();
 		int x2 = b.getMyX();
@@ -110,26 +112,50 @@ public class MyGdxGame extends ApplicationAdapter {
 	public boolean wallchecking(Dot a,Dot b){ // не универсальный. временный. нашел альтернативу в методе DRAWOUTLINE
 		int x = a.getMyX();
 		int y = a.getMyY();
-		if (b.getMyX()==x-1 &&b.getMyY()==y+1){
-			if ((IndexExistanceChecking(a.getClass()==Red.class ? bluedots : reddots,x-1,y) && (a.getClass()==Red.class ? bluedots[x-1][y].status : reddots[x-1][y].status==true )) && ((IndexExistanceChecking(a.getClass()==Red.class ? bluedots : reddots,x,y+1) && (a.getClass()==Red.class ? bluedots[x][y+1].status : reddots[x][y+1].status==true )))){
-				return true;
+		if (a.getClass()!=Red.class) {
+			if (b.getMyX() == x - 1 && b.getMyY() == y + 1) {
+				if (IndexExistanceChecking(reddots, x - 1, y) && IndexExistanceChecking(reddots, x, y + 1) && (reddots[x - 1][y].linkedlist.contains(reddots[x][y + 1]))) {
+					return true;
+				}
+			}
+			if (b.getMyX() == x + 1 && b.getMyY() == y + 1) {
+				if (IndexExistanceChecking(reddots, x, y + 1) && IndexExistanceChecking(reddots, x + 1, y) && (reddots[x][y + 1].linkedlist.contains(reddots[x + 1][y]))) {
+					return true;
+				}
+			}
+			if (b.getMyX() == x - 1 && b.getMyY() == y - 1) {
+				if (IndexExistanceChecking(reddots, x, y - 1) && IndexExistanceChecking(reddots, x - 1, y) && (reddots[x][y - 1].linkedlist.contains(reddots[x - 1][y]))) {
+					return true;
+				}
+			}
+			if (b.getMyX() == x + 1 && b.getMyY() == y - 1) {
+				if (IndexExistanceChecking(reddots, x, y - 1) && IndexExistanceChecking(reddots, x + 1, y) && (reddots[x][y - 1].linkedlist.contains(reddots[x + 1][y]))) {
+					return true;
+				}
+			}
+		} else {
+			if (b.getMyX()==x-1 &&b.getMyY()==y+1){
+				if (IndexExistanceChecking(bluedots,x-1,y)  && IndexExistanceChecking(bluedots,x,y+1) && (bluedots[x-1][y].linkedlist.contains(bluedots[x][y+1]))) {
+					return true;
+				}
+			}
+			if (b.getMyX()==x+1 &&b.getMyY()==y+1){
+				if (IndexExistanceChecking(bluedots,x,y+1)  && IndexExistanceChecking(bluedots,x+1,y) && (bluedots[x][y+1].linkedlist.contains(bluedots[x+1][y]))){
+					return true;
+				}
+			}
+			if (b.getMyX()==x-1 &&b.getMyY()==y-1){
+				if (IndexExistanceChecking(bluedots,x,y-1)  && IndexExistanceChecking(bluedots,x-1,y) && (bluedots[x][y-1].linkedlist.contains(bluedots[x-1][y]))){
+					return true;
+				}
+			}
+			if (b.getMyX()==x+1 &&b.getMyY()==y-1){
+				if (IndexExistanceChecking(bluedots,x,y-1) && IndexExistanceChecking(bluedots,x+1,y) && (bluedots[x][y-1].linkedlist.contains(bluedots[x+1][y]))){
+					return true;
+				}
 			}
 		}
-		if (b.getMyX()==x+1 &&b.getMyY()==y+1){
-			if ((IndexExistanceChecking(a.getClass()==Red.class ? bluedots : reddots,x,y+1) && (a.getClass()==Red.class ? bluedots[x][y+1].status : reddots[x][y+1].status==true )) && ((IndexExistanceChecking(a.getClass()==Red.class ? bluedots : reddots,x+1,y) && (a.getClass()==Red.class ? bluedots[x+1][y].status : reddots[x+1][y].status==true )))){
-				return true;
-			}
-		}
-		if (b.getMyX()==x-1 &&b.getMyY()==y-1){
-			if ((IndexExistanceChecking(a.getClass()==Red.class ? bluedots : reddots,x,y-1) && (a.getClass()==Red.class ? bluedots[x][y-1].status : reddots[x][y-1].status==true )) && ((IndexExistanceChecking(a.getClass()==Red.class ? bluedots : reddots,x-1,y) && (a.getClass()==Red.class ? bluedots[x-1][y].status : reddots[x-1][y].status==true )))){
-				return true;
-			}
-		}
-		if (b.getMyX()==x+1 &&b.getMyY()==y-1){
-			if ((IndexExistanceChecking(a.getClass()==Red.class ? bluedots : reddots,x,y-1) && (a.getClass()==Red.class ? bluedots[x][y-1].status : reddots[x][y-1].status==true )) && ((IndexExistanceChecking(a.getClass()==Red.class ? bluedots : reddots,x+1,y) && (a.getClass()==Red.class ? bluedots[x+1][y].status : reddots[x+1][y].status==true )))){
-				return true;
-			}
-		}
+
 		return false;
 	}
 
@@ -148,16 +174,25 @@ public class MyGdxGame extends ApplicationAdapter {
 		history.add(a);
 		a.setStatus(true);
 		acc++;
+		if (a.getClass() == Red.class) {  // для красных
 			for (int i2 = 2; i2 >= 0; i2--) {
 				for (int i = 0; i < 3; i++) {
-					if (IndexExistanceChecking(a.getClass()==Red.class ? reddots : bluedots, ex[i], ey[i2]) && reddots[ex[i]][ey[i2]].status == false) { //условие существования и незакрашенности
+					if (IndexExistanceChecking(reddots, ex[i], ey[i2]) && reddots[ex[i]][ey[i2]].status == false && wallchecking(a,reddots[ex[i]][ey[i2]])==false) { //условие существования и незакрашенности
 						count++;
-						Gdx.app.log(Integer.toString(ex[i]) + ":" + Integer.toString(ey[i2]), " -- Прошёл проверку условий");
-						return AroundDotsChecking(a.getClass() == Red.class ? reddots[ex[i]][ey[i2]] : bluedots[ex[i]][ey[i2]], history,acc);
+						return AroundDotsChecking(reddots[ex[i]][ey[i2]], history,acc);
 					}
 				}
 			}
-
+		} else { // для синих
+			for (int i2 = 2; i2 >= 0; i2--) {
+				for (int i = 0; i < 3; i++) {
+					if (IndexExistanceChecking(bluedots, ex[i], ey[i2]) && bluedots[ex[i]][ey[i2]].status == false && wallchecking(a,bluedots[ex[i]][ey[i2]])==false) { //условие существования и незакрашенности
+						count++;
+						return AroundDotsChecking(bluedots[ex[i]][ey[i2]], history,acc);
+					}
+				}
+			}
+		}
 		if (((a.getMyX() == history.get(0).getMyX() && a.getMyY() == history.get(0).getMyY()) || (proximity(a, history.get(0)))) && (acc > 3)) { // условие завершения контура 1-совпадение координат(уже не нжуно вроде) ИЛИ близость) И больше 3 точек для контура
 			return history;
 		}
@@ -209,15 +244,23 @@ public class MyGdxGame extends ApplicationAdapter {
 			for (int i = 0; i < wall.get(u)+1; i++) {// wall.get(u)=history.size()-1;
 				if (i != wall.get(u)) {
 					if (u > 0) {
-						//outline.get(i + sum-1-wall.get(u) ).linking(outline.get(i  +  sum-wall.get(u)));
+
+						outline.get(i + sum-1-wall.get(u)).linkedlist.add(outline.get(i  +  sum-wall.get(u)));   // -- ALTERNATE WALL CHECKING
+						outline.get(i  +  sum-wall.get(u)).linkedlist.add(outline.get(i + sum-1-wall.get(u)));   // -- ALTERNATE WALL CHECKING
 						drawer.line(new Vector2(outline.get(i + sum-1-wall.get(u) ).getX() + 10, outline.get(i +  sum-1-wall.get(u) ).getY() + 10), new Vector2(outline.get(i  +  sum-wall.get(u)).getX() + 10, outline.get( i +  sum-wall.get(u) ).getY() + 10), 8, outline.get(i + sum-1-wall.get(u)  ).getClass() == Red.class ? Color.RED : Color.BLUE);
 					} else {
+						outline.get(i + 0).linkedlist.add(outline.get(1 + i));
+						outline.get(1 + i).linkedlist.add(outline.get(i + 0));
 						drawer.line(new Vector2(outline.get(i + 0).getX() + 10, outline.get(i + 0).getY() + 10), new Vector2(outline.get(i + 1).getX() + 10, outline.get(1 + i).getY() + 10), 8, outline.get(0).getClass() == Red.class ? Color.RED : Color.BLUE);
 					}
 				} else {
 					if (u > 0) {
+						outline.get(i +  sum-1-wall.get(u) ).linkedlist.add(outline.get( sum-wall.get(u)-1));
+						outline.get(sum-wall.get(u)-1).linkedlist.add(outline.get(i +  sum-1-wall.get(u)));
 						drawer.line(new Vector2(outline.get(i +  sum-1-wall.get(u) ).getX() + 10, outline.get(i +  sum-1-wall.get(u) ).getY() + 10), new Vector2(outline.get(  sum-1-wall.get(u)).getX() + 10, outline.get( sum-wall.get(u)-1).getY() + 10), 8, outline.get(i + sum-1-wall.get(u)  ).getClass() == Red.class ? Color.RED : Color.BLUE);
 					} else {
+						outline.get(i + 0).linkedlist.add(outline.get(0));
+						outline.get(0).linkedlist.add(outline.get(i + 0));
 						drawer.line(new Vector2(outline.get(i + 0).getX() + 10, outline.get(i + 0).getY() + 10), new Vector2(outline.get(0).getX() + 10, outline.get(0).getY() + 10), 8, outline.get(0).getClass() == Red.class ? Color.RED : Color.BLUE);
 					}
 				}
@@ -267,7 +310,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		int Y;
 		boolean status = false;
 		boolean isUnit = false;
-
+		ArrayList<Dot> linkedlist = new ArrayList<Dot>();
 		@Override
 		public void draw(Batch batch, float parentAlpha) {
 			Color batchColor = batch.getColor();
@@ -303,6 +346,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		void setStatus(boolean b) {
 			this.status = b;
 		}
+
 	}
 
 
@@ -368,7 +412,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		//Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		field();
-		checker();
+		if (count > 6) {
+			checker();
+		}
 		drawoutline();
 
 		batch.begin();
