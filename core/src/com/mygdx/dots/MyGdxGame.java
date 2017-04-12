@@ -41,13 +41,15 @@ public class MyGdxGame extends ApplicationAdapter {
 	int indx;
 	BitmapFont font;
 	int indy;
-	int vert = 19;
+	int vert = 20;
 	int horiz = 32;
 	Red[][] reddots = new Red[horiz][vert];
 	Blue[][] bluedots = new Blue[horiz][vert];
 	ArrayList<Dot> outline = new ArrayList<Dot>();
 	ArrayList<Integer> wall = new ArrayList<Integer>();
 	int sum = 0;
+	int size = 50;
+	final double rate = 0.42857143;
 
 
 	public static class drawer { // класс чертежник
@@ -172,12 +174,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		ey[2] = y + 1;
 		int count = 0;
 		history.add(a);
-		a.setStatus(true);
+		a.setStatus(1);
 		acc++;
 		if (a.getClass() == Red.class) {  // для красных
 			for (int i2 = 2; i2 >= 0; i2--) {
 				for (int i = 0; i < 3; i++) {
-					if (IndexExistanceChecking(reddots, ex[i], ey[i2]) && reddots[ex[i]][ey[i2]].status == false && wallchecking(a,reddots[ex[i]][ey[i2]])==false) { //условие существования и незакрашенности
+					if (IndexExistanceChecking(reddots, ex[i], ey[i2]) && reddots[ex[i]][ey[i2]].status != 1 && wallchecking(a,reddots[ex[i]][ey[i2]])==false) { //условие существования и незакрашенности
 						count++;
 						return AroundDotsChecking(reddots[ex[i]][ey[i2]], history,acc);
 					}
@@ -186,7 +188,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		} else { // для синих
 			for (int i2 = 2; i2 >= 0; i2--) {
 				for (int i = 0; i < 3; i++) {
-					if (IndexExistanceChecking(bluedots, ex[i], ey[i2]) && bluedots[ex[i]][ey[i2]].status == false && wallchecking(a,bluedots[ex[i]][ey[i2]])==false) { //условие существования и незакрашенности
+					if (IndexExistanceChecking(bluedots, ex[i], ey[i2]) && bluedots[ex[i]][ey[i2]].status != 1 && wallchecking(a,bluedots[ex[i]][ey[i2]])==false) { //условие существования и незакрашенности
 						count++;
 						return AroundDotsChecking(bluedots[ex[i]][ey[i2]], history,acc);
 					}
@@ -194,12 +196,15 @@ public class MyGdxGame extends ApplicationAdapter {
 			}
 		}
 		if (((a.getMyX() == history.get(0).getMyX() && a.getMyY() == history.get(0).getMyY()) || (proximity(a, history.get(0)))) && (acc > 3)) { // условие завершения контура 1-совпадение координат(уже не нжуно вроде) ИЛИ близость) И больше 3 точек для контура
+			for (int i = 0; i < history.size(); i++) {
+				history.get(i).setStatus(2);
+			}
 			return history;
 		}
 
 		if (count == 0) {
 			for (int i = 0; i < history.size(); i++) {
-				history.get(i).setStatus(false);
+				history.get(i).setStatus(0);
 			}
 			history.clear();
 
@@ -208,7 +213,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		}
 		for (int i = 0; i < history.size(); i++) {
-			history.get(i).setStatus(false);
+			history.get(i).setStatus(0);
 		}
 		history.clear();
 		return null;
@@ -216,7 +221,7 @@ public class MyGdxGame extends ApplicationAdapter {
 
 
 	public void algo(Dot a) { // сам алгоритм
-		if (a.status == false) {
+		if (a.status == 0) {
 			ArrayList<Dot> history = new ArrayList<Dot>();
 			int acc = 0;
 			AroundDotsChecking(a, history, acc);
@@ -281,7 +286,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			if (count % 2 == 0) {
 				Red r = new Red();
 				r.setSize(24, 24);
-				r.setPosition(xx, yy);
+				r.setPosition(xx+size*(float)rate/2+2, yy+size*(float)rate/2+2);
 				r.setColor(Color.RED);
 				r.setMyX(indx);
 				r.setMyY(indy);
@@ -292,7 +297,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			} else {
 				Blue b = new Blue();
 				b.setSize(24, 24);
-				b.setPosition(xx, yy);
+				b.setPosition(xx+size*(float)rate/2+2, yy+size*(float)rate/2+2);
 				b.setColor(Color.BLUE);
 				b.setMyX(indx);
 				b.setMyY(indy);
@@ -308,7 +313,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	class Dot extends Actor { //invisible
 		int X;
 		int Y;
-		boolean status = false;
+		int status = 0;
 		boolean isUnit = false;
 		ArrayList<Dot> linkedlist = new ArrayList<Dot>();
 		@Override
@@ -343,7 +348,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			return Y;
 		}
 
-		void setStatus(boolean b) {
+		void setStatus(int b) {
 			this.status = b;
 		}
 
@@ -360,8 +365,9 @@ public class MyGdxGame extends ApplicationAdapter {
 
 				dot = new Dot();
 				dot.addListener(new DotListener());
-				dot.setSize(50, 50);
-				dot.setPosition(60-13 + n * (60), 60-13 + n1 * 60);
+				dot.setSize(size, size);
+				dot.setPosition(60-size*(float)rate-4 + n *
+						(60), 60-size*(float)rate-4 + n1 * 60);
 				dot.setColor(0,0,0,0);
 				stage.addActor(dot);
 
