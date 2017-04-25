@@ -50,6 +50,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	int sum = 0;
 	int size = 50;
 	final double rate = 0.42857143;
+	Texture pause;
+	Texture PauseText;
+	boolean bPressed;
 
 
 	public static class drawer { // класс чертежник
@@ -62,12 +65,12 @@ public class MyGdxGame extends ApplicationAdapter {
 			drawer.line(start, end);
 			drawer.end();
 		}
-		public  static void point(float x, float y){
-			drawer.begin(ShapeRenderer.ShapeType.Point);
-			drawer.setColor(Color.CHARTREUSE);
-			drawer.point(x,y,40);
+		public static void rect(int a,int c,int b,int d) {
+			drawer.begin(ShapeRenderer.ShapeType.Line);
+			drawer.setColor(Color.RED);
+			drawer.rect(a, c, b, d);
 			drawer.end();
-
+			drawer.isDrawing();
 		}
 	}
 
@@ -179,7 +182,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		if (a.getClass() == Red.class) {  // для красных
 			for (int i2 = 2; i2 >= 0; i2--) {
 				for (int i = 0; i < 3; i++) {
-					if (IndexExistanceChecking(reddots, ex[i], ey[i2]) && reddots[ex[i]][ey[i2]].status != 1 && wallchecking(a,reddots[ex[i]][ey[i2]])==false) { //условие существования и незакрашенности
+					if (IndexExistanceChecking(reddots, ex[i], ey[i2]) && reddots[ex[i]][ey[i2]].status == 0 && wallchecking(a,reddots[ex[i]][ey[i2]])==false) { //условие существования и незакрашенности
 						count++;
 						return AroundDotsChecking(reddots[ex[i]][ey[i2]], history,acc);
 					}
@@ -188,7 +191,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		} else { // для синих
 			for (int i2 = 2; i2 >= 0; i2--) {
 				for (int i = 0; i < 3; i++) {
-					if (IndexExistanceChecking(bluedots, ex[i], ey[i2]) && bluedots[ex[i]][ey[i2]].status != 1 && wallchecking(a,bluedots[ex[i]][ey[i2]])==false) { //условие существования и незакрашенности
+					if (IndexExistanceChecking(bluedots, ex[i], ey[i2]) && bluedots[ex[i]][ey[i2]].status == 0 && wallchecking(a,bluedots[ex[i]][ey[i2]])==false) { //условие существования и незакрашенности
 						count++;
 						return AroundDotsChecking(bluedots[ex[i]][ey[i2]], history,acc);
 					}
@@ -196,9 +199,6 @@ public class MyGdxGame extends ApplicationAdapter {
 			}
 		}
 		if (((a.getMyX() == history.get(0).getMyX() && a.getMyY() == history.get(0).getMyY()) || (proximity(a, history.get(0)))) && (acc > 3)) { // условие завершения контура 1-совпадение координат(уже не нжуно вроде) ИЛИ близость) И больше 3 точек для контура
-			for (int i = 0; i < history.size(); i++) {
-				history.get(i).setStatus(2);
-			}
 			return history;
 		}
 
@@ -218,7 +218,6 @@ public class MyGdxGame extends ApplicationAdapter {
 		history.clear();
 		return null;
 	}
-
 
 	public void algo(Dot a) { // сам алгоритм
 		if (a.status == 0) {
@@ -308,6 +307,16 @@ public class MyGdxGame extends ApplicationAdapter {
 			return true;
 		}
 	}
+	class mBlistener extends InputListener{
+		int mBcount;
+		@Override
+		public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+			if (mBcount%2==0) bPressed = true;
+			else bPressed=false;
+			mBcount++;
+			return true;
+		}
+	}
 
 
 	class Dot extends Actor { //invisible
@@ -353,6 +362,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 
 	}
+	class myButton extends Actor{
+		@Override
+		public void draw(Batch batch, float parentAlpha) {
+			batch.draw(pause, getX(), getY(), getWidth(), getHeight());
+		}
+	}
 
 
 
@@ -392,12 +407,15 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 	}
 
+
 	@Override
 	public void create() {
 		batch = new SpriteBatch();
 		Circle circles = new Circle();
 		dotimg = new Texture("krug.png");
 		backg = new Texture("backg.jpg");
+		pause = new Texture("pause2.png");
+		PauseText = new Texture("paused.jpg");
 		camera = new OrthographicCamera();
 		camera.setToOrtho(true, 1920, 1080);
 		camera.update();
@@ -407,6 +425,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		initDots();
 		font = new BitmapFont();
 		font.setColor(Color.RED);
+		myButton menu = new myButton();
+		menu.addListener(new mBlistener());
+		menu.setPosition(0,1000);
+		menu.setSize(80,80);
+		stage.addActor(menu);
+
 
 
 
@@ -423,12 +447,16 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		drawoutline();
 
-		batch.begin();
 
-		font.draw(batch, "X: "+indx+" Y: "+indy, 100, 100);
-		batch.end();
 		stage.draw();
 		stage.act(Gdx.graphics.getDeltaTime());
+		batch.begin();
+		if (bPressed==true){
+			batch.draw(PauseText,960-250,590-50);
+		}
+
+		batch.end();
+
 
 	}
 
