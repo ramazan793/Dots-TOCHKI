@@ -6,7 +6,7 @@ repeat: none
 up
   rotate: false
   xy: 1, 1
-  size: 680, 340
-  orig: 680, 340
+  size: 252, 126
+  orig: 252, 126
   offset: 0, 0
   index: -1

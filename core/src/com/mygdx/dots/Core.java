@@ -9,24 +9,19 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Core extends Game {
 
-    SpriteBatch batch;
-
-
+    Menu menu;
+    CreditsScreen creditsScreen;
+    MyGdxGame gameScreen;
+    SettingsScreen settingsScreen;
 
     @Override
     public void create () {
-        batch = new SpriteBatch();
-        setScreen(new Menu(this));
 
+        creditsScreen=new CreditsScreen(this);
+        gameScreen=new MyGdxGame(this);
+        settingsScreen=new SettingsScreen(this);
+        menu=new Menu(this);
+        setScreen(menu);
     }
 
-    @Override
-    public void render () {
-        super.render();
-    }
-
-    @Override
-    public void dispose () {
-        batch.dispose();
-    }
 }
