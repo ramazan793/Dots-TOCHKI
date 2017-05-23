@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -21,7 +22,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -36,7 +39,7 @@ public class Menu extends ScreenAdapter {
     Stage stage;
     ExtendViewport viewport;
     Texture pause;
-    Texture backg;
+    Texture backg,mypack;
 
     TextButton button;
     TextButton settingbutton;
@@ -56,6 +59,7 @@ public class Menu extends ScreenAdapter {
         this.game=game;
         pause = new Texture("pause2.png");
         backg = new Texture("backg.jpg");
+        mypack=new Texture("button/mypack.png");
     }
 
     @Override
@@ -79,28 +83,30 @@ public class Menu extends ScreenAdapter {
         skin.addRegions(buttonAtlas);
         textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = font;
-        textButtonStyle.up = skin.getDrawable("up");;
+        textButtonStyle.up = skin.getDrawable("up");
+        textButtonStyle.over= new TextureRegionDrawable(new TextureRegion(mypack));
 
         button = new TextButton("Play", textButtonStyle);
         settingbutton = new TextButton("Settings",textButtonStyle);
         creditbutton = new TextButton("Credits",textButtonStyle);
 
-        button.addListener(new ChangeListener() {
+        button.addListener(new ClickListener(){
             @Override
-            public void changed (ChangeListener.ChangeEvent event, Actor actor) {
-                System.out.println("Button Pressed");
+            public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(new MyGdxGame(game));
             }
         });
-        settingbutton.addListener(new ChangeListener() {
+
+        settingbutton.addListener(new ClickListener(){
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(game.settingsScreen);
             }
         });
-        creditbutton.addListener(new ChangeListener() {
+
+        creditbutton.addListener(new ClickListener(){
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(game.creditsScreen);
             }
         });
@@ -113,7 +119,6 @@ public class Menu extends ScreenAdapter {
         table.add(button).row();
         table.add(settingbutton).width(410).row();
         table.add(creditbutton).width(350).row();
-        stage.setDebugAll(true);
 
     }
 
