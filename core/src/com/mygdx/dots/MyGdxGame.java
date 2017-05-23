@@ -2,6 +2,7 @@ package com.mygdx.dots;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -20,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import java.util.ArrayList;
@@ -29,7 +31,7 @@ import javax.sound.sampled.Line;
 import sun.rmi.runtime.Log;
 import sun.security.provider.SHA;
 
-public class MyGdxGame extends ApplicationAdapter {
+public class MyGdxGame implements Screen {
 	SpriteBatch batch;
 	Texture dotimg;
 	OrthographicCamera camera;
@@ -43,6 +45,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	int indy;
 	int vert = 20;
 	int horiz = 32;
+	Actor[][] dots = new Actor[18][32];
 	Red[][] reddots = new Red[horiz][vert];
 	Blue[][] bluedots = new Blue[horiz][vert];
 	ArrayList<Dot> outline = new ArrayList<Dot>();
@@ -50,9 +53,16 @@ public class MyGdxGame extends ApplicationAdapter {
 	int sum = 0;
 	int size = 50;
 	final double rate = 0.42857143;
-	Texture pause;
+	static Texture pause;
 	Texture PauseText;
-	boolean bPressed;
+	boolean menu=true;
+
+	Core game;
+	MyGdxGame(final Core game){
+		this.game=game;
+	}
+
+
 
 
 	public static class drawer { // класс чертежник
@@ -94,7 +104,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		return false;
 	}
-	public void checkunit(Dot a){
+	public boolean checkunit(Dot a){
 		int x = a.getMyX();
 		int y = a.getMyY();
 		int ex[] = new int[3];
@@ -105,14 +115,16 @@ public class MyGdxGame extends ApplicationAdapter {
 		ey[0] = y - 1;
 		ey[1] = y;
 		ey[2] = y + 1;
+		int counta=0;
 		for (int i2 = 2; i2 >= 0; i2--) {
 			for (int i = 0; i < 3; i++) {
 				if (IndexExistanceChecking(a.getClass()==Red.class ? reddots : bluedots, ex[i], ey[i2]) ) { //условие существования и незакрашенности
-					count++;
-					if (count ==3){a.isUnit=true;break;}
+					counta++;
+					if (counta ==3){/*a.isUnit=true;break;*/ return true;}
 				}
 			}
 		}
+		return false;
 	}
 	public boolean wallchecking(Dot a,Dot b){ // не универсальный. временный. нашел альтернативу в методе DRAWOUTLINE
 		int x = a.getMyX();
@@ -175,15 +187,15 @@ public class MyGdxGame extends ApplicationAdapter {
 		ey[0] = y - 1;
 		ey[1] = y;
 		ey[2] = y + 1;
-		int count = 0;
+		int countt = 0;
 		history.add(a);
 		a.setStatus(1);
 		acc++;
 		if (a.getClass() == Red.class) {  // для красных
 			for (int i2 = 2; i2 >= 0; i2--) {
 				for (int i = 0; i < 3; i++) {
-					if (IndexExistanceChecking(reddots, ex[i], ey[i2]) && reddots[ex[i]][ey[i2]].status == 0 && wallchecking(a,reddots[ex[i]][ey[i2]])==false) { //условие существования и незакрашенности
-						count++;
+					if (IndexExistanceChecking(reddots, ex[i], ey[i2]) && reddots[ex[i]][ey[i2]].status == 0 && wallchecking(a,reddots[ex[i]][ey[i2]])==false /*|| checkunit(a)*/) { //условие существования и незакрашенности
+						countt++;
 						return AroundDotsChecking(reddots[ex[i]][ey[i2]], history,acc);
 					}
 				}
@@ -191,8 +203,8 @@ public class MyGdxGame extends ApplicationAdapter {
 		} else { // для синих
 			for (int i2 = 2; i2 >= 0; i2--) {
 				for (int i = 0; i < 3; i++) {
-					if (IndexExistanceChecking(bluedots, ex[i], ey[i2]) && bluedots[ex[i]][ey[i2]].status == 0 && wallchecking(a,bluedots[ex[i]][ey[i2]])==false) { //условие существования и незакрашенности
-						count++;
+					if (IndexExistanceChecking(bluedots, ex[i], ey[i2]) && bluedots[ex[i]][ey[i2]].status == 0 && wallchecking(a,bluedots[ex[i]][ey[i2]])==false/*|| checkunit(a)*/) { //условие существования и незакрашенности
+						countt++;
 						return AroundDotsChecking(bluedots[ex[i]][ey[i2]], history,acc);
 					}
 				}
@@ -202,7 +214,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			return history;
 		}
 
-		if (count == 0) {
+		if (countt == 0) {
 			for (int i = 0; i < history.size(); i++) {
 				history.get(i).setStatus(0);
 			}
@@ -307,17 +319,6 @@ public class MyGdxGame extends ApplicationAdapter {
 			return true;
 		}
 	}
-	class mBlistener extends InputListener{
-		int mBcount;
-		@Override
-		public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-			if (mBcount%2==0) bPressed = true;
-			else bPressed=false;
-			mBcount++;
-			return true;
-		}
-	}
-
 
 	class Dot extends Actor { //invisible
 		int X;
@@ -362,12 +363,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 
 	}
-	class myButton extends Actor{
-		@Override
-		public void draw(Batch batch, float parentAlpha) {
-			batch.draw(pause, getX(), getY(), getWidth(), getHeight());
-		}
-	}
+
 
 
 
@@ -379,6 +375,7 @@ public class MyGdxGame extends ApplicationAdapter {
 			for (int n = 0; n < 32; n++) {
 
 				dot = new Dot();
+				dots[n1][n]=dot;
 				dot.addListener(new DotListener());
 				dot.setSize(size, size);
 				dot.setPosition(60-size*(float)rate-4 + n *
@@ -400,44 +397,120 @@ public class MyGdxGame extends ApplicationAdapter {
 	public void checker(){ //юзает алгоритм для всех сущесвтуеюших точек
 		for (int y = 0; y < 18; y++) {
 			for (int x = 0; x < 30; x++) {
-				String a;
-				if (reddots[x][y] != null) { algo(reddots[x][y]); }
+
+
+				if (reddots[x][y] != null) { algo(reddots[x][y]);  }
 				if (bluedots[x][y] != null) { algo(bluedots[x][y]); }
+
 			}
+		}
+	}
+/*	public void renderer(){
+		for (int n1=0; n1 < 18; n1++) {
+			for (int n = 0; n < 32; n++) {
+				if (currentScreen!=GameScreen.GAME_SCREEN){
+					dots[n1][n].setTouchable(Touchable.disabled);
+				} else {
+					dots[n1][n].setTouchable(Touchable.enabled);
+				}
+			}
+		}
+		for (int y = 0; y < 18; y++) {
+			for (int x = 0; x < 32; x++) {
+				if (reddots[x][y] != null && currentScreen == GameScreen.MENU_SCREEN) {
+					reddots[x][y].setVisible(false);
+					reddots[x][y].setTouchable(Touchable.disabled);
+				} else if (reddots[x][y] != null) {
+					reddots[x][y].setVisible(true);
+					reddots[x][y].setTouchable(Touchable.enabled);
+				}
+				if (bluedots[x][y] != null && currentScreen == GameScreen.MENU_SCREEN) {
+					bluedots[x][y].setVisible(false);
+					bluedots[x][y].setTouchable(Touchable.disabled);
+				} else if (bluedots[x][y] != null) {
+					bluedots[x][y].setVisible(true);
+					bluedots[x][y].setTouchable(Touchable.enabled);
+				}
+			}
+		}
+	}*/
+
+
+
+	class myButton extends Actor{
+		@Override
+		public void draw(Batch batch, float parentAlpha) {
+			batch.draw(pause, getX(), getY(), getWidth(), getHeight());
+		}
+	}
+
+	class mBlistener extends InputListener {
+		@Override
+		public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+
+				game.setScreen(new Menu(game));
+
+
+
+			return true;
 		}
 	}
 
 
+
+
+
+
+	/*@Override
+	public void render() { // ненавижу его
+		Gdx.gl.glClearColor(1, 1, 1, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		currentScreen.render(this);*/
+		/*if(currentScreen==GameScreen.MENU_SCREEN){
+			//render objects for Core Screen
+
+		}else if(currentScreen==GameScreen.GAME_SCREEN){
+
+			field();
+			if (count > 6) {
+				checker();
+			}
+			drawoutline();
+
+		}*/
+
+		/*stage.draw();
+		stage.act(Gdx.graphics.getDeltaTime());
+
+		batch.begin();
+
+		batch.end();*/
+
+
+	/*}*/
+
 	@Override
-	public void create() {
-		batch = new SpriteBatch();
-		Circle circles = new Circle();
+	public void show() {
 		dotimg = new Texture("krug.png");
-		backg = new Texture("backg.jpg");
-		pause = new Texture("pause2.png");
-		PauseText = new Texture("paused.jpg");
+		pause = new Texture("button/back2.png");
+		batch = new SpriteBatch();
 		camera = new OrthographicCamera();
-		camera.setToOrtho(true, 1920, 1080);
+		camera.setToOrtho(true, (float)Gdx.graphics.getWidth(), (float)Gdx.graphics.getHeight());
 		camera.update();
 		viewport = new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		stage = new Stage(viewport, batch);
 		Gdx.input.setInputProcessor(stage);
 		initDots();
-		font = new BitmapFont();
-		font.setColor(Color.RED);
+
 		myButton menu = new myButton();
 		menu.addListener(new mBlistener());
 		menu.setPosition(0,1000);
 		menu.setSize(80,80);
 		stage.addActor(menu);
-
-
-
-
 	}
 
 	@Override
-	public void render() { // ненавижу его
+	public void render(float delta) {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		//Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
@@ -447,21 +520,35 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		drawoutline();
 
-
+		batch.begin();
+		batch.end();
 		stage.draw();
 		stage.act(Gdx.graphics.getDeltaTime());
-		batch.begin();
-		if (bPressed==true){
-			batch.draw(PauseText,960-250,590-50);
-		}
+	}
 
-		batch.end();
+	@Override
+	public void resize(int width, int height) {
 
+	}
+
+	@Override
+	public void pause() {
+
+	}
+
+	@Override
+	public void resume() {
+
+	}
+
+	@Override
+	public void hide() {
 
 	}
 
 	@Override
 	public void dispose() {
+
 		batch.dispose();
 		dotimg.dispose();
 		stage.dispose();
