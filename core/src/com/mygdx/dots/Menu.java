@@ -2,6 +2,7 @@ package com.mygdx.dots;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -17,9 +18,11 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -27,11 +30,11 @@ import com.badlogic.gdx.utils.viewport.Viewport;
  * Created by Ramazan on 22.05.2017.
  */
 
-public class Menu implements Screen {
+public class Menu extends ScreenAdapter {
+
     Core game;
     Stage stage;
-    Viewport viewport;
-    SpriteBatch batch;
+    ExtendViewport viewport;
     Texture pause;
     Texture backg;
 
@@ -43,34 +46,33 @@ public class Menu implements Screen {
     Skin skin;
     TextureAtlas buttonAtlas;
 
-    public float width = Gdx.graphics.getWidth();
-    public float height = Gdx.graphics.getHeight();
+    public static final float WORLD_WIDTH=800;
+    public static final float WORLD_HEIGHT=480;
+
 
 
     public Menu(final Core game){
-        this.game=game;
-        viewport = new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        batch = new SpriteBatch();
-        stage = new Stage(viewport, batch);
-        Gdx.input.setInputProcessor(stage);
 
+        this.game=game;
+        pause = new Texture("pause2.png");
+        backg = new Texture("backg.jpg");
     }
+
     @Override
     public void show() {
-        pause = new Texture("pause2.png");
 
-        font = new BitmapFont();
+        viewport = new ExtendViewport(WORLD_WIDTH, WORLD_HEIGHT);
+
+        stage = new Stage(viewport);
+        Gdx.input.setInputProcessor(stage);
 
         FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter p = new FreeTypeFontGenerator.FreeTypeFontParameter();
 
         p.color = Color.RED;
-        p.size=100;
+        p.size=40;
         p.borderWidth=3;
         font = gen.generateFont(p);
-        font.getData().setScale(0.8f);
-
-        backg = new Texture("backg.jpg");
 
         skin = new Skin();
         buttonAtlas = new TextureAtlas("button/mypack.atlas");
@@ -83,18 +85,6 @@ public class Menu implements Screen {
         settingbutton = new TextButton("Settings",textButtonStyle);
         creditbutton = new TextButton("Credits",textButtonStyle);
 
-        settingbutton.setSize((float)0.4*width,(float)0.25*height);
-        creditbutton.setSize((float)0.4*width,(float)0.25*height);
-        button.setSize((float)0.4*width,(float)0.25*height);
-
-        button.setPosition(width/2-button.getWidth()/2,-button.getHeight()/2+height/16*13);
-        settingbutton.setPosition(width/2-button.getWidth()/2,height/2-button.getHeight()/2);
-        creditbutton.setPosition(width/2-button.getWidth()/2,button.getHeight()/2-height/16);
-
-        System.out.println(width+"  "+height);
-        stage.addActor(settingbutton);
-        stage.addActor(creditbutton);
-        stage.addActor(button);
         button.addListener(new ChangeListener() {
             @Override
             public void changed (ChangeListener.ChangeEvent event, Actor actor) {
@@ -105,30 +95,41 @@ public class Menu implements Screen {
         settingbutton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new SettingsScreen(game));
+                game.setScreen(game.settingsScreen);
             }
         });
         creditbutton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new CreditsScreen(game));
+                game.setScreen(game.creditsScreen);
             }
         });
+
+        Table table=new Table();
+        table.setFillParent(true);
+
+        stage.addActor(table);
+        table.defaults().pad(10);
+        table.add(button).row();
+        table.add(settingbutton).width(410).row();
+        table.add(creditbutton).width(350).row();
+        stage.setDebugAll(true);
+
     }
 
     @Override
     public void render(float delta) {
+
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         for (int y = 0; y < 18; y++) {
             MyGdxGame.drawer.line(new Vector2(0, y * 60), new Vector2(1920, y * 60), 3, Color.SKY);
         }
         for (int x = 0; x < 32;x++){
             MyGdxGame.drawer.line(new Vector2(60*x, 0), new Vector2(60*x, 1080), 3, Color.SKY);
         }
-        batch.begin();
-        //batch.draw(backg,0,0,width,height);
-        batch.end();
+
         stage.act(delta);
         stage.draw();
     }
@@ -136,25 +137,6 @@ public class Menu implements Screen {
     @Override
     public void resize(int width, int height) {
 
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
-
+        stage.getViewport().update(width,height,true);
     }
 }

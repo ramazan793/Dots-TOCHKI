@@ -7,7 +7,9 @@ import com.badlogic.gdx.Screen;
  */
 
 public class CreditsScreen implements Screen {
+
     Core game;
+
     CreditsScreen(final Core game){
         this.game = game;
     }
