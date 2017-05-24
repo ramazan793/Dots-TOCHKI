@@ -28,6 +28,11 @@ android {
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-armeabi-v7a"
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86"
     }
+    buildTypes {
+        release {
+            debuggable true
+        }
+    }
 }
 
 

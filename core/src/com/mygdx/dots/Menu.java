@@ -1,33 +1,35 @@
 package com.mygdx.dots;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
+        import com.badlogic.gdx.Gdx;
+        import com.badlogic.gdx.Screen;
+        import com.badlogic.gdx.ScreenAdapter;
+        import com.badlogic.gdx.graphics.Color;
+        import com.badlogic.gdx.graphics.GL20;
+        import com.badlogic.gdx.graphics.Texture;
+        import com.badlogic.gdx.graphics.g2d.Batch;
+        import com.badlogic.gdx.graphics.g2d.BitmapFont;
+        import com.badlogic.gdx.graphics.g2d.Sprite;
+        import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+        import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+        import com.badlogic.gdx.graphics.g2d.TextureRegion;
+        import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+        import com.badlogic.gdx.math.Vector2;
+        import com.badlogic.gdx.scenes.scene2d.Actor;
+        import com.badlogic.gdx.scenes.scene2d.InputEvent;
+        import com.badlogic.gdx.scenes.scene2d.InputListener;
+        import com.badlogic.gdx.scenes.scene2d.Stage;
+        import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+        import com.badlogic.gdx.scenes.scene2d.ui.Table;
+        import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+        import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+        import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+        import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+        import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+        import com.badlogic.gdx.utils.viewport.ExtendViewport;
+        import com.badlogic.gdx.utils.viewport.StretchViewport;
+        import com.badlogic.gdx.utils.viewport.Viewport;
+
+        import static com.mygdx.dots.SettingsScreen.prefs;
 
 /**
  * Created by Ramazan on 22.05.2017.
@@ -49,6 +51,11 @@ public class Menu extends ScreenAdapter {
     Skin skin;
     TextureAtlas buttonAtlas;
 
+    final String font_chars = "абвгдежзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
+    String play;
+    String settings;
+    String credits;
+
     public static final float WORLD_WIDTH=800;
     public static final float WORLD_HEIGHT=480;
 
@@ -64,7 +71,20 @@ public class Menu extends ScreenAdapter {
 
     @Override
     public void show() {
-
+        if (prefs.getBoolean("isrus")==true){
+            SettingsScreen.isrus=true;
+        }else{
+            SettingsScreen.isrus=false;
+        }
+        if (SettingsScreen.isrus==true) {
+            play = "Играть";
+            settings = "Настройки";
+            credits = "Авторы";
+        } else {
+            play = "Play";
+            settings = "Settings";
+            credits = "Credits";
+        }
         viewport = new ExtendViewport(WORLD_WIDTH, WORLD_HEIGHT);
 
         stage = new Stage(viewport);
@@ -73,6 +93,7 @@ public class Menu extends ScreenAdapter {
         FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter p = new FreeTypeFontGenerator.FreeTypeFontParameter();
 
+        p.characters=font_chars;
         p.color = Color.RED;
         p.size=40;
         p.borderWidth=3;
@@ -86,28 +107,28 @@ public class Menu extends ScreenAdapter {
         textButtonStyle.up = skin.getDrawable("up");
         textButtonStyle.over= new TextureRegionDrawable(new TextureRegion(mypack));
 
-        button = new TextButton("Play", textButtonStyle);
-        settingbutton = new TextButton("Settings",textButtonStyle);
-        creditbutton = new TextButton("Credits",textButtonStyle);
+        button = new TextButton(play, textButtonStyle);
+        settingbutton = new TextButton(settings,textButtonStyle);
+        creditbutton = new TextButton(credits,textButtonStyle);
 
         button.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MyGdxGame(game));
+                game.setScreen(Core.gameScreen);
             }
         });
 
         settingbutton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(game.settingsScreen);
+                game.setScreen(Core.settingsScreen);
             }
         });
 
         creditbutton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(game.creditsScreen);
+                game.setScreen(Core.creditsScreen);
             }
         });
 
