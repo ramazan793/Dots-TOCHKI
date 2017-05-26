@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Matrix4;
@@ -22,6 +23,10 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -52,7 +57,11 @@ public class MyGdxGame implements Screen {
 	float size;
 	static Texture pause;
 	 double rate;
-
+	Viewport viewport2;
+	Stage stage2;
+	Button.ButtonStyle backStyle;
+	Texture backtext;
+	Button back;
 
 
 	public static float WORLD_WIDTH;
@@ -61,6 +70,7 @@ public class MyGdxGame implements Screen {
 
 	MyGdxGame(final Core game){
 		this.game=game;
+		backtext = new Texture("button/back2.png");
 	}
 
 	public static class drawer { // класс чертежник
@@ -196,7 +206,7 @@ public class MyGdxGame implements Screen {
 		if (a.getClass() == Red.class) {  // для красных
 			for (int i2 = 2; i2 >= 0; i2--) {
 				for (int i = 0; i < 3; i++) {
-					if (IndexExistanceChecking(reddots, ex[i], ey[i2]) && reddots[ex[i]][ey[i2]].status == 0 && wallchecking(a,reddots[ex[i]][ey[i2]])==false /*|| checkunit(a)*/) { //условие существования и незакрашенности
+					if (IndexExistanceChecking(reddots, ex[i], ey[i2]) && /*(*/reddots[ex[i]][ey[i2]].status == 0/* || checkunit(a))*/ && wallchecking(a,reddots[ex[i]][ey[i2]])==false) { //условие существования и незакрашенности
 						countt++;
 						return AroundDotsChecking(reddots[ex[i]][ey[i2]], history,acc);
 					}
@@ -205,7 +215,7 @@ public class MyGdxGame implements Screen {
 		} else { // для синих
 			for (int i2 = 2; i2 >= 0; i2--) {
 				for (int i = 0; i < 3; i++) {
-					if (IndexExistanceChecking(bluedots, ex[i], ey[i2]) && bluedots[ex[i]][ey[i2]].status == 0 && wallchecking(a,bluedots[ex[i]][ey[i2]])==false/*|| checkunit(a)*/) { //условие существования и незакрашенности
+					if (IndexExistanceChecking(bluedots, ex[i], ey[i2]) && (bluedots[ex[i]][ey[i2]].status == 0 || checkunit(a))&& wallchecking(a,bluedots[ex[i]][ey[i2]])==false) { //условие существования и незакрашенности
 						countt++;
 						return AroundDotsChecking(bluedots[ex[i]][ey[i2]], history,acc);
 					}
@@ -265,21 +275,21 @@ public class MyGdxGame implements Screen {
 
 						outline.get(i + sum-1-wall.get(u)).linkedlist.add(outline.get(i  +  sum-wall.get(u)));   // -- ALTERNATE WALL CHECKING
 						outline.get(i  +  sum-wall.get(u)).linkedlist.add(outline.get(i + sum-1-wall.get(u)));   // -- ALTERNATE WALL CHECKING
-						drawer.line(new Vector2(outline.get(i + sum-1-wall.get(u) ).getX() + 10, outline.get(i +  sum-1-wall.get(u) ).getY() + 10), new Vector2(outline.get(i  +  sum-wall.get(u)).getX() + 10, outline.get( i +  sum-wall.get(u) ).getY() + 10), 8, outline.get(i + sum-1-wall.get(u)  ).getClass() == Red.class ? Color.RED : Color.BLUE);
+						drawer.line(new Vector2(outline.get(i + sum-1-wall.get(u) ).getX() + 13, outline.get(i +  sum-1-wall.get(u) ).getY() + 10), new Vector2(outline.get(i  +  sum-wall.get(u)).getX() + 13, outline.get( i +  sum-wall.get(u) ).getY() + 10), 8, outline.get(i + sum-1-wall.get(u)  ).getClass() == Red.class ? Color.RED : Color.BLUE);
 					} else {
 						outline.get(i + 0).linkedlist.add(outline.get(1 + i));
 						outline.get(1 + i).linkedlist.add(outline.get(i + 0));
-						drawer.line(new Vector2(outline.get(i + 0).getX() + 10, outline.get(i + 0).getY() + 10), new Vector2(outline.get(i + 1).getX() + 10, outline.get(1 + i).getY() + 10), 8, outline.get(0).getClass() == Red.class ? Color.RED : Color.BLUE);
+						drawer.line(new Vector2(outline.get(i + 0).getX() + 13, outline.get(i + 0).getY() + 10), new Vector2(outline.get(i + 1).getX() + 13, outline.get(1 + i).getY() + 10), 8, outline.get(0).getClass() == Red.class ? Color.RED : Color.BLUE);
 					}
 				} else {
 					if (u > 0) {
 						outline.get(i +  sum-1-wall.get(u) ).linkedlist.add(outline.get( sum-wall.get(u)-1));
 						outline.get(sum-wall.get(u)-1).linkedlist.add(outline.get(i +  sum-1-wall.get(u)));
-						drawer.line(new Vector2(outline.get(i +  sum-1-wall.get(u) ).getX() + 10, outline.get(i +  sum-1-wall.get(u) ).getY() + 10), new Vector2(outline.get(  sum-1-wall.get(u)).getX() + 10, outline.get( sum-wall.get(u)-1).getY() + 10), 8, outline.get(i + sum-1-wall.get(u)  ).getClass() == Red.class ? Color.RED : Color.BLUE);
+						drawer.line(new Vector2(outline.get(i +  sum-1-wall.get(u) ).getX() + 13, outline.get(i +  sum-1-wall.get(u) ).getY() + 10), new Vector2(outline.get(  sum-1-wall.get(u)).getX() + 13, outline.get( sum-wall.get(u)-1).getY() + 10), 8, outline.get(i + sum-1-wall.get(u)  ).getClass() == Red.class ? Color.RED : Color.BLUE);
 					} else {
 						outline.get(i + 0).linkedlist.add(outline.get(0));
 						outline.get(0).linkedlist.add(outline.get(i + 0));
-						drawer.line(new Vector2(outline.get(i + 0).getX() + 10, outline.get(i + 0).getY() + 10), new Vector2(outline.get(0).getX() + 10, outline.get(0).getY() + 10), 8, outline.get(0).getClass() == Red.class ? Color.RED : Color.BLUE);
+						drawer.line(new Vector2(outline.get(i + 0).getX() + 13, outline.get(i + 0).getY() + 10), new Vector2(outline.get(0).getX() + 13, outline.get(0).getY() + 10), 8, outline.get(0).getClass() == Red.class ? Color.RED : Color.BLUE);
 					}
 				}
 			}
@@ -377,15 +387,16 @@ public class MyGdxGame implements Screen {
 	public void initDots(){
 		for (int n1=0; n1 < 18; n1++) {
 			for (int n = 0; n < 32; n++) {
-
-				dot = new Dot();
-				dots[n1][n]=dot;
-				dot.addListener(new DotListener());
-				dot.setSize(size, size);
-				dot.setPosition(60-size/2 + n *
-						60/**(float)rate*/, 60-size/2 + n1 * 60/**(float)rate*/);
-				dot.setColor(0,0,0,0);
-				stage.addActor(dot);
+				if(n1!=0 || n!=0) {
+					dot = new Dot();
+					dots[n1][n] = dot;
+					dot.addListener(new DotListener());
+					dot.setSize(size, size);
+					dot.setPosition(60 - size / 2 + n *
+							60/**(float)rate*/, 60 - size / 2 + n1 * 60/**(float)rate*/);
+					dot.setColor(0, 0, 0, 0);
+					stage.addActor(dot);
+				}
 
 			}
 		}
@@ -441,22 +452,7 @@ public class MyGdxGame implements Screen {
 
 
 
-	class myButton extends Actor{
-		@Override
-		public void draw(Batch batch, float parentAlpha) {
-			batch.draw(pause, getX(), getY(), getWidth(), getHeight());
-		}
-	}
 
-	class mBlistener extends InputListener {
-		@Override
-		public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-
-			game.setScreen(new Menu(game));
-			dispose();
-			return true;
-		}
-	}
 
 
 	@Override
@@ -472,12 +468,14 @@ public class MyGdxGame implements Screen {
 		rate = 0.42857143;
 
 
-		/*camera = new OrthographicCamera();
+		camera = new OrthographicCamera();
 		camera.setToOrtho(true, (float)Gdx.graphics.getWidth(), (float)Gdx.graphics.getHeight());
-		camera.update();*/
-		viewport = new ExtendViewport(1780, 1080);
+		camera.update();
+		viewport = new StretchViewport((float)Gdx.graphics.getWidth(), (float)Gdx.graphics.getHeight());
+		viewport2 = new ExtendViewport(WORLD_WIDTH,WORLD_HEIGHT);
 		batch = new SpriteBatch();
 		stage = new Stage(viewport, batch);
+		stage2=new Stage(viewport2,batch);
 		Gdx.input.setInputProcessor(stage);
 
 
@@ -490,15 +488,29 @@ public class MyGdxGame implements Screen {
 		outline = new ArrayList<Dot>();
 		wall = new ArrayList<Integer>();
 
+		backStyle = new Button.ButtonStyle();
+		backStyle.up = new TextureRegionDrawable(new TextureRegion(backtext));
+		back=new Button(backStyle);
 
+		back.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				game.setScreen(Core.menu);
+				outline.clear();
+				wall.clear();
+
+				dispose();
+			}
+		});
+
+		back.setSize(80,80);
+		back.setPosition(0,0);
+		stage.addActor(back);
 		initDots();
 		count=0;
-		myButton menu = new myButton();
-		menu.addListener(new mBlistener());
-		menu.setSize(80,80);
-		menu.setPosition(0,WORLD_HEIGHT-menu.getHeight());
 
-		stage.addActor(menu);
+
+
 	}
 
 	@Override
@@ -514,6 +526,7 @@ public class MyGdxGame implements Screen {
 		drawoutline();
 		batch.begin();
 		batch.end();
+
 		stage.draw();
 		stage.act(Gdx.graphics.getDeltaTime());
 	}

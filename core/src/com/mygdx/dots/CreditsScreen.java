@@ -32,8 +32,7 @@ public class CreditsScreen implements Screen {
     TextButton headButton;
     TextButton.TextButtonStyle headStyle;
     BitmapFont font;
-    final String font_chars = "абвгдежзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
-    String name;
+
     public static final float WORLD_WIDTH=800;
     public static final float WORLD_HEIGHT=480;
     CreditsScreen(final Core game){
@@ -56,27 +55,21 @@ public class CreditsScreen implements Screen {
 
     @Override
     public void show() {
-        if (SettingsScreen.isrus){
-            name="Фазылов Рамазан";
-        }else{
-            name="Fazylov Ramazan";
-        }
         batch=new SpriteBatch();
         viewport = new ExtendViewport(WORLD_WIDTH, WORLD_HEIGHT);
         stage = new Stage(viewport,batch);
         Gdx.input.setInputProcessor(stage);
-
 
         FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter p = new FreeTypeFontGenerator.FreeTypeFontParameter();
         p.color = Color.RED;
         p.size=30;
         p.borderWidth=2;
-        p.characters=font_chars;
+        p.characters=Core.font_chars;
         font = gen.generateFont(p);
         headStyle = new TextButton.TextButtonStyle();
         headStyle.font = font;
-        headButton = new TextButton(name,headStyle);
+        headButton = new TextButton(Core.name,headStyle);
 
         back=new myActor();
         back.setSize(40,40);
@@ -98,7 +91,7 @@ public class CreditsScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+        Core.setLang();
         for (int y = 0; y < 18; y++) {
             MyGdxGame.drawer.line(new Vector2(0, y * 60), new Vector2(1920, y * 60), 3, Color.SKY);
         }

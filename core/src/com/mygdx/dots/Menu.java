@@ -51,10 +51,7 @@ public class Menu extends ScreenAdapter {
     Skin skin;
     TextureAtlas buttonAtlas;
 
-    final String font_chars = "абвгдежзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
-    String play;
-    String settings;
-    String credits;
+
 
     public static final float WORLD_WIDTH=800;
     public static final float WORLD_HEIGHT=480;
@@ -64,27 +61,12 @@ public class Menu extends ScreenAdapter {
     public Menu(final Core game){
 
         this.game=game;
-        pause = new Texture("pause2.png");
-        backg = new Texture("backg.jpg");
         mypack=new Texture("button/mypack.png");
     }
 
     @Override
     public void show() {
-        if (prefs.getBoolean("isrus")==true){
-            SettingsScreen.isrus=true;
-        }else{
-            SettingsScreen.isrus=false;
-        }
-        if (SettingsScreen.isrus==true) {
-            play = "Играть";
-            settings = "Настройки";
-            credits = "Авторы";
-        } else {
-            play = "Play";
-            settings = "Settings";
-            credits = "Credits";
-        }
+        Core.setLang();
         viewport = new ExtendViewport(WORLD_WIDTH, WORLD_HEIGHT);
 
         stage = new Stage(viewport);
@@ -93,7 +75,7 @@ public class Menu extends ScreenAdapter {
         FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter p = new FreeTypeFontGenerator.FreeTypeFontParameter();
 
-        p.characters=font_chars;
+        p.characters=Core.font_chars;
         p.color = Color.RED;
         p.size=40;
         p.borderWidth=3;
@@ -107,9 +89,9 @@ public class Menu extends ScreenAdapter {
         textButtonStyle.up = skin.getDrawable("up");
         textButtonStyle.over= new TextureRegionDrawable(new TextureRegion(mypack));
 
-        button = new TextButton(play, textButtonStyle);
-        settingbutton = new TextButton(settings,textButtonStyle);
-        creditbutton = new TextButton(credits,textButtonStyle);
+        button = new TextButton(Core.play, textButtonStyle);
+        settingbutton = new TextButton(Core.settings,textButtonStyle);
+        creditbutton = new TextButton(Core.credits,textButtonStyle);
 
         button.addListener(new ClickListener(){
             @Override
@@ -148,7 +130,7 @@ public class Menu extends ScreenAdapter {
 
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+        Core.setLang();
         for (int y = 0; y < 18; y++) {
             MyGdxGame.drawer.line(new Vector2(0, y * 60), new Vector2(1920, y * 60), 3, Color.SKY);
         }

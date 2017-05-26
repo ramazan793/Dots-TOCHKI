@@ -46,8 +46,7 @@ public class SettingsScreen implements Screen {
     SpriteBatch batch;
 
     public static Preferences prefs;
-    final String font_chars = "абвгдежзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
-    public static boolean isrus;
+
 
     String slang;
 
@@ -78,16 +77,6 @@ public class SettingsScreen implements Screen {
     @Override
     public void show() {
 
-        if (prefs.getBoolean("isrus")==true){
-            isrus=true;
-        }else{
-            isrus=false;
-        }
-        if (isrus) {
-            slang = "Язык";
-        }else{
-            slang = "Language";
-        }
 
         viewport = new ExtendViewport(WORLD_WIDTH, WORLD_HEIGHT);
         batch = new SpriteBatch();
@@ -99,7 +88,7 @@ public class SettingsScreen implements Screen {
         p.color = Color.RED;
         p.size=30;
         p.borderWidth=2;
-        p.characters=font_chars;
+        p.characters=Core.font_chars;
         font = gen.generateFont(p);
 
         langButtonStyle = new TextButton.TextButtonStyle();
@@ -120,7 +109,7 @@ public class SettingsScreen implements Screen {
 
         button = new TextButton("RU",langButtonStyle);
         button2 = new TextButton("EN",langButtonStyle);
-        headButton = new TextButton(slang,headStyle);
+        headButton = new TextButton(Core.slang,headStyle);
 
         button.addListener(new ClickListener() {
             @Override
@@ -129,6 +118,7 @@ public class SettingsScreen implements Screen {
                 prefs.flush();
                 prefs.putInteger("count",1);
                 prefs.flush();
+                Core.isrus=true;
             }
         });
         button2.addListener(new ClickListener() {
@@ -138,6 +128,7 @@ public class SettingsScreen implements Screen {
                 prefs.flush();
                 prefs.putInteger("count",0);
                 prefs.flush();
+                Core.isrus=false;
             }
         });
 
@@ -162,16 +153,12 @@ public class SettingsScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Core.setLang();
         for (int y = 0; y < 18; y++) {
             MyGdxGame.drawer.line(new Vector2(0, y * 60), new Vector2(1920, y * 60), 3, Color.SKY);
         }
         for (int x = 0; x < 32;x++){
             MyGdxGame.drawer.line(new Vector2(60*x, 0), new Vector2(60*x, 1080), 3, Color.SKY);
-        }
-        if (prefs.getBoolean("isrus")==true){
-            isrus=true;
-        }else{
-            isrus=false;
         }
         batch.begin();
         batch.end();
