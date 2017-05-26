@@ -119,6 +119,7 @@ public class SettingsScreen implements Screen {
                 prefs.putInteger("count",1);
                 prefs.flush();
                 Core.isrus=true;
+                Gdx.input.vibrate(500);
             }
         });
         button2.addListener(new ClickListener() {
@@ -129,6 +130,7 @@ public class SettingsScreen implements Screen {
                 prefs.putInteger("count",0);
                 prefs.flush();
                 Core.isrus=false;
+                Gdx.input.vibrate(500);
             }
         });
 

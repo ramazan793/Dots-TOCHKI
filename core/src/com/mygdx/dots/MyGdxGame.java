@@ -2,6 +2,7 @@ package com.mygdx.dots;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
@@ -47,8 +48,8 @@ public class MyGdxGame implements Screen {
 	public int count;
 	int indx;
 	int indy;
-	int vert = 21;
-	int horiz = 32;
+	int vert;
+	int horiz;
 	Actor[][] dots;
 	Red[][] reddots;
 	Blue[][] bluedots;
@@ -56,14 +57,11 @@ public class MyGdxGame implements Screen {
 	ArrayList<Integer> wall;
 	float size;
 	static Texture pause;
-	 double rate;
 	Viewport viewport2;
 	Stage stage2;
 	Button.ButtonStyle backStyle;
 	Texture backtext;
 	Button back;
-
-
 	public static float WORLD_WIDTH;
 	public static float WORLD_HEIGHT;
 	Core game;
@@ -77,27 +75,17 @@ public class MyGdxGame implements Screen {
 		static ShapeRenderer drawer = new ShapeRenderer();
 
 		public static void line(Vector2 start, Vector2 end, int lineWidth, Color color) { // рисует линии
-		/*	start.y*=0.45;
-			end.y*=0.45;
-			start.x*=0.45;
-			end.x*=0.45;*/
 			Gdx.gl.glLineWidth(lineWidth);
 			drawer.begin(ShapeRenderer.ShapeType.Line);
 			drawer.setColor(color);
 			drawer.line(start,end);
 			drawer.end();
 		}
-		public static void rect(int a,int c,int b,int d) {
-			drawer.begin(ShapeRenderer.ShapeType.Line);
-			drawer.setColor(Color.RED);
-			drawer.rect(a, c, b, d);
-			drawer.end();
-			drawer.isDrawing();
-		}
+
 	}
 
 	public boolean IndexExistanceChecking(Dot a[][], int x, int y) { //проверяет, существует ли точка на координате
- 		if (a[x][y] == null) {
+		if (a[x][y] == null) {
 			return false;
 		} else {
 			return true;
@@ -128,11 +116,12 @@ public class MyGdxGame implements Screen {
 		ey[1] = y;
 		ey[2] = y + 1;
 		int counta=0;
+
 		for (int i2 = 2; i2 >= 0; i2--) {
 			for (int i = 0; i < 3; i++) {
 				if (IndexExistanceChecking(a.getClass()==Red.class ? reddots : bluedots, ex[i], ey[i2]) ) { //условие существования и незакрашенности
 					counta++;
-					if (counta ==3){/*a.isUnit=true;break;*/ return true;}
+					if (counta ==3){ a.setStatus(2); return true;}
 				}
 			}
 		}
@@ -191,6 +180,7 @@ public class MyGdxGame implements Screen {
 	public ArrayList<Dot> AroundDotsChecking(Dot a, ArrayList<Dot> history,int acc) { // проходит по контуру
 		int x = a.getMyX();
 		int y = a.getMyY();
+		System.out.println("LOOOOOOOOOOOP");
 		int ex[] = new int[3];
 		ex[0] = x - 1;
 		ex[1] = x;
@@ -201,12 +191,16 @@ public class MyGdxGame implements Screen {
 		ey[2] = y + 1;
 		int countt = 0;
 		history.add(a);
-		a.setStatus(1);
+		if (a.status==0) {
+			a.setStatus(1);
+		} else if (a.status==2){
+			a.setStatus(3);
+		}
 		acc++;
 		if (a.getClass() == Red.class) {  // для красных
 			for (int i2 = 2; i2 >= 0; i2--) {
 				for (int i = 0; i < 3; i++) {
-					if (IndexExistanceChecking(reddots, ex[i], ey[i2]) && /*(*/reddots[ex[i]][ey[i2]].status == 0/* || checkunit(a))*/ && wallchecking(a,reddots[ex[i]][ey[i2]])==false) { //условие существования и незакрашенности
+					if (IndexExistanceChecking(reddots, ex[i], ey[i2]) && (reddots[ex[i]][ey[i2]].status != 1 && reddots[ex[i]][ey[i2]].status != 3 ) && wallchecking(a,reddots[ex[i]][ey[i2]])==false) { //условие существования и незакрашенности
 						countt++;
 						return AroundDotsChecking(reddots[ex[i]][ey[i2]], history,acc);
 					}
@@ -215,7 +209,7 @@ public class MyGdxGame implements Screen {
 		} else { // для синих
 			for (int i2 = 2; i2 >= 0; i2--) {
 				for (int i = 0; i < 3; i++) {
-					if (IndexExistanceChecking(bluedots, ex[i], ey[i2]) && (bluedots[ex[i]][ey[i2]].status == 0 || checkunit(a))&& wallchecking(a,bluedots[ex[i]][ey[i2]])==false) { //условие существования и незакрашенности
+					if (IndexExistanceChecking(bluedots, ex[i], ey[i2]) && (bluedots[ex[i]][ey[i2]].status !=1&& bluedots[ex[i]][ey[i2]].status != 3)&& wallchecking(a,bluedots[ex[i]][ey[i2]])==false) { //условие существования и незакрашенности
 						countt++;
 						return AroundDotsChecking(bluedots[ex[i]][ey[i2]], history,acc);
 					}
@@ -223,21 +217,19 @@ public class MyGdxGame implements Screen {
 			}
 		}
 		if (((a.getMyX() == history.get(0).getMyX() && a.getMyY() == history.get(0).getMyY()) || (proximity(a, history.get(0)))) && (acc > 3)) { // условие завершения контура 1-совпадение координат(уже не нжуно вроде) ИЛИ близость) И больше 3 точек для контура
+			for (int i = 0; i < history.size(); i++) {
+				history.get(i).status=2;
+			}
 			return history;
 		}
 
-		if (countt == 0) {
-			for (int i = 0; i < history.size(); i++) {
-				history.get(i).setStatus(0);
-			}
-			history.clear();
 
-			return null;
-
-
-		}
 		for (int i = 0; i < history.size(); i++) {
-			history.get(i).setStatus(0);
+			if (history.get(i).status==1) {
+				history.get(i).setStatus(0);
+			} else if (history.get(i).status==3){
+				history.get(i).setStatus(2);
+			}
 		}
 		history.clear();
 		return null;
@@ -251,6 +243,7 @@ public class MyGdxGame implements Screen {
 			if (history.size() > 0) {
 				for (int i = 0; i < history.size(); i++) { // прорисовка контура
 					if (i != history.size() - 1) {
+						history.get(i).status=2;
 						outline.add(history.get(i));
 					} else {
 						wall.add(i);
@@ -414,8 +407,8 @@ public class MyGdxGame implements Screen {
 			for (int x = 0; x < 30; x++) {
 
 
-				if (reddots[x][y] != null) { algo(reddots[x][y]);  }
-				if (bluedots[x][y] != null) { algo(bluedots[x][y]); }
+				if (reddots[x][y] != null && reddots[x][y].status!=2) { algo(reddots[x][y]);  }
+				if (bluedots[x][y] != null && bluedots[x][y].status!=2) { algo(bluedots[x][y]); }
 
 			}
 		}
@@ -464,8 +457,6 @@ public class MyGdxGame implements Screen {
 
 		vert = 21;
 		horiz = 32;
-//		rate = 1.01;
-		rate = 0.42857143;
 
 
 		camera = new OrthographicCamera();
