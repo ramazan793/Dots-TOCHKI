@@ -93,10 +93,10 @@ public class CreditsScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Core.setLang();
         for (int y = 0; y < 18; y++) {
-            MyGdxGame.drawer.line(new Vector2(0, y * 60), new Vector2(1920, y * 60), 3, Color.SKY);
+            GameScreen.drawer.line(new Vector2(0, y * 60), new Vector2(1920, y * 60), 3, Color.SKY);
         }
         for (int x = 0; x < 32;x++){
-            MyGdxGame.drawer.line(new Vector2(60*x, 0), new Vector2(60*x, 1080), 3, Color.SKY);
+            GameScreen.drawer.line(new Vector2(60*x, 0), new Vector2(60*x, 1080), 3, Color.SKY);
         }
 
         stage.act(delta);

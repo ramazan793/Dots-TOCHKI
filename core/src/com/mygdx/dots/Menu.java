@@ -1,35 +1,23 @@
 package com.mygdx.dots;
 
         import com.badlogic.gdx.Gdx;
-        import com.badlogic.gdx.Screen;
         import com.badlogic.gdx.ScreenAdapter;
         import com.badlogic.gdx.graphics.Color;
         import com.badlogic.gdx.graphics.GL20;
         import com.badlogic.gdx.graphics.Texture;
-        import com.badlogic.gdx.graphics.g2d.Batch;
         import com.badlogic.gdx.graphics.g2d.BitmapFont;
-        import com.badlogic.gdx.graphics.g2d.Sprite;
-        import com.badlogic.gdx.graphics.g2d.SpriteBatch;
         import com.badlogic.gdx.graphics.g2d.TextureAtlas;
         import com.badlogic.gdx.graphics.g2d.TextureRegion;
         import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
         import com.badlogic.gdx.math.Vector2;
-        import com.badlogic.gdx.scenes.scene2d.Actor;
         import com.badlogic.gdx.scenes.scene2d.InputEvent;
-        import com.badlogic.gdx.scenes.scene2d.InputListener;
         import com.badlogic.gdx.scenes.scene2d.Stage;
         import com.badlogic.gdx.scenes.scene2d.ui.Skin;
         import com.badlogic.gdx.scenes.scene2d.ui.Table;
         import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-        import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
         import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-        import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
         import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
         import com.badlogic.gdx.utils.viewport.ExtendViewport;
-        import com.badlogic.gdx.utils.viewport.StretchViewport;
-        import com.badlogic.gdx.utils.viewport.Viewport;
-
-        import static com.mygdx.dots.SettingsScreen.prefs;
 
 /**
  * Created by Ramazan on 22.05.2017.
@@ -97,6 +85,9 @@ public class Menu extends ScreenAdapter {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(Core.gameScreen);
+                if (0==0){
+                    game.setScreen(Core.tutorial);
+                }
             }
         });
 
@@ -132,10 +123,10 @@ public class Menu extends ScreenAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Core.setLang();
         for (int y = 0; y < 18; y++) {
-            MyGdxGame.drawer.line(new Vector2(0, y * 60), new Vector2(1920, y * 60), 3, Color.SKY);
+            GameScreen.drawer.line(new Vector2(0, y * 60), new Vector2(1920, y * 60), 3, Color.SKY);
         }
         for (int x = 0; x < 32;x++){
-            MyGdxGame.drawer.line(new Vector2(60*x, 0), new Vector2(60*x, 1080), 3, Color.SKY);
+            GameScreen.drawer.line(new Vector2(60*x, 0), new Vector2(60*x, 1080), 3, Color.SKY);
         }
 
         stage.act(delta);

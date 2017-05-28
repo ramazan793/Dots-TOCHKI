@@ -2,8 +2,6 @@ package com.mygdx.dots;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import static com.mygdx.dots.SettingsScreen.prefs;
 
@@ -14,9 +12,10 @@ import static com.mygdx.dots.SettingsScreen.prefs;
 public class Core extends Game {
 
    static Menu menu;
-        static    CreditsScreen creditsScreen;
-        static    MyGdxGame gameScreen;
-        static    SettingsScreen settingsScreen;
+        static CreditsScreen creditsScreen;
+        static GameScreen gameScreen;
+        static SettingsScreen settingsScreen;
+        static Tutorial tutorial;
         static final String font_chars = "абвгдежзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
         static String name;
         static String slang;
@@ -53,7 +52,7 @@ public class Core extends Game {
         }
         prefs.flush();
         creditsScreen=new CreditsScreen(this);
-        gameScreen=new MyGdxGame(this);
+        gameScreen=new GameScreen(this);
         settingsScreen=new SettingsScreen(this);
         menu=new Menu(this);
         setScreen(menu);

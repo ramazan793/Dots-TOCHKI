@@ -38,7 +38,7 @@ import javax.sound.sampled.Line;
 import sun.rmi.runtime.Log;
 import sun.security.provider.SHA;
 
-public class MyGdxGame implements Screen {
+public class GameScreen implements Screen {
 	SpriteBatch batch;
 	Texture dotimg;
 	OrthographicCamera camera;
@@ -66,7 +66,7 @@ public class MyGdxGame implements Screen {
 	public static float WORLD_HEIGHT;
 	Core game;
 
-	MyGdxGame(final Core game){
+	GameScreen(final Core game){
 		this.game=game;
 		backtext = new Texture("button/back2.png");
 	}
@@ -180,7 +180,6 @@ public class MyGdxGame implements Screen {
 	public ArrayList<Dot> AroundDotsChecking(Dot a, ArrayList<Dot> history,int acc) { // проходит по контуру
 		int x = a.getMyX();
 		int y = a.getMyY();
-		System.out.println("LOOOOOOOOOOOP");
 		int ex[] = new int[3];
 		ex[0] = x - 1;
 		ex[1] = x;
@@ -511,6 +510,7 @@ public class MyGdxGame implements Screen {
 		//Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		field();
 //		drawer.line(new Vector2(0,0),new Vector2(890,540),1,Color.BLACK);
+
 		if (count > 6) {
 			checker();
 		}
