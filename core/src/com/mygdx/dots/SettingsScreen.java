@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -39,6 +40,8 @@ public class SettingsScreen implements Screen {
     myActor back;
     Texture backtext;
     SpriteBatch batch;
+    TextButton tutorial;
+    TextButton.TextButtonStyle tutStyle;
 
     public static Preferences prefs;
 
@@ -72,7 +75,7 @@ public class SettingsScreen implements Screen {
     @Override
     public void show() {
 
-
+        Core.latestScreen=2;
         viewport = new ExtendViewport(WORLD_WIDTH, WORLD_HEIGHT);
         batch = new SpriteBatch();
         stage = new Stage(viewport,batch);
@@ -90,6 +93,9 @@ public class SettingsScreen implements Screen {
         langButtonStyle.font = font;
         langButtonStyle.up = new TextureRegionDrawable(new TextureRegion(lang));
 
+        tutStyle = new TextButton.TextButtonStyle();
+        tutStyle.font = font;
+
         headStyle = new TextButton.TextButtonStyle();
         headStyle.font = font;
 
@@ -99,22 +105,21 @@ public class SettingsScreen implements Screen {
         back.addListener(new myListener());
         stage.addActor(back);
 
-
-
-
         button = new TextButton("RU",langButtonStyle);
         button2 = new TextButton("EN",langButtonStyle);
         headButton = new TextButton(Core.slang,headStyle);
+        tutorial = new TextButton(Core.tutSet,Menu.textButtonStyle);
+        tutorial.setPosition(WORLD_WIDTH/2-tutorial.getWidth()/2,100);
 
         button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 prefs.putBoolean("isrus",true);
                 prefs.flush();
-                prefs.putInteger("count",1);
+                prefs.putInteger("count",prefs.getInteger("count")+1);
                 prefs.flush();
                 Core.isrus=true;
-                Gdx.input.vibrate(500);
+                Gdx.input.vibrate(1000);
             }
         });
         button2.addListener(new ClickListener() {
@@ -122,10 +127,16 @@ public class SettingsScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 prefs.putBoolean("isrus",false);
                 prefs.flush();
-                prefs.putInteger("count",0);
+                prefs.putInteger("count",prefs.getInteger("count")+1);
                 prefs.flush();
                 Core.isrus=false;
-                Gdx.input.vibrate(500);
+                Gdx.input.vibrate(1000);
+            }
+        });
+        tutorial.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(Core.tutorial);
             }
         });
 
@@ -138,12 +149,11 @@ public class SettingsScreen implements Screen {
         Table table = new Table();
         table.setFillParent(true);
         table.setPosition(0,50);
-        stage.addActor(table);
         table.add(button).width(100).height(100).pad(0,0,0,100);
         table.add(button2).width(100).height(100).pad(0,100,0,0);
 
-
-
+        stage.addActor(table);
+        stage.addActor(tutorial);
     }
 
     @Override

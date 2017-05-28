@@ -23,27 +23,35 @@ public class Core extends Game {
         static String settings;
         static String credits;
         static boolean isrus;
+        static String tutortext;
+        static String tutSet;
+        static int latestScreen;
 
     static void setLang(){
         if (isrus){
             name="Фазылов Рамазан";
-            play = "Играть";
+            play = " Играть ";
             settings = "Настройки";
             credits = "Авторы";
             slang = "Язык";
+            tutortext="Обучение:"+"\n \n"+"Ставьте точки,"+"\n"+"окружайте вражеские"+"\n"+"для того, "+"\n"+"чтобы захватить их."+"\n"+"Победит тот, кто "+"\n"+"захватит больше точек." ;
+            tutSet = " Правила ";
         } else {
             name="Fazylov Ramazan";
             slang = "Language";
             play = "Play";
             settings = "Settings";
             credits = "Credits";
+            tutortext="How to play:"+"\n \n"+"Set the dots,"+"\n"+"surround the enemy"+"\n"+"in order to capture them."+"\n"+"Who captures more dots"+"\n"+"will win";
+            tutSet="Rules";
         }
     }
 
     @Override
     public void create () {
         prefs= Gdx.app.getPreferences("MyPreferences");
-        if (prefs.getInteger("count")==1) {
+
+        if (prefs.getInteger("count")%2!=0) {
             prefs.putBoolean("isrus", true);
             isrus=true;
         } else {
@@ -54,6 +62,7 @@ public class Core extends Game {
         creditsScreen=new CreditsScreen(this);
         gameScreen=new GameScreen(this);
         settingsScreen=new SettingsScreen(this);
+        tutorial = new Tutorial(this);
         menu=new Menu(this);
         setScreen(menu);
     }

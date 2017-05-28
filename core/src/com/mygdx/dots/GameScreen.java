@@ -267,21 +267,21 @@ public class GameScreen implements Screen {
 
 						outline.get(i + sum-1-wall.get(u)).linkedlist.add(outline.get(i  +  sum-wall.get(u)));   // -- ALTERNATE WALL CHECKING
 						outline.get(i  +  sum-wall.get(u)).linkedlist.add(outline.get(i + sum-1-wall.get(u)));   // -- ALTERNATE WALL CHECKING
-						drawer.line(new Vector2(outline.get(i + sum-1-wall.get(u) ).getX() + 13, outline.get(i +  sum-1-wall.get(u) ).getY() + 10), new Vector2(outline.get(i  +  sum-wall.get(u)).getX() + 13, outline.get( i +  sum-wall.get(u) ).getY() + 10), 8, outline.get(i + sum-1-wall.get(u)  ).getClass() == Red.class ? Color.RED : Color.BLUE);
+						drawer.line(new Vector2(outline.get(i + sum-1-wall.get(u) ).getX() + 13, outline.get(i +  sum-1-wall.get(u) ).getY() + 13), new Vector2(outline.get(i  +  sum-wall.get(u)).getX() + 13, outline.get( i +  sum-wall.get(u) ).getY() + 13), 8, outline.get(i + sum-1-wall.get(u)  ).getClass() == Red.class ? Color.RED : Color.BLUE);
 					} else {
 						outline.get(i + 0).linkedlist.add(outline.get(1 + i));
 						outline.get(1 + i).linkedlist.add(outline.get(i + 0));
-						drawer.line(new Vector2(outline.get(i + 0).getX() + 13, outline.get(i + 0).getY() + 10), new Vector2(outline.get(i + 1).getX() + 13, outline.get(1 + i).getY() + 10), 8, outline.get(0).getClass() == Red.class ? Color.RED : Color.BLUE);
+						drawer.line(new Vector2(outline.get(i + 0).getX() + 13, outline.get(i + 0).getY() + 13), new Vector2(outline.get(i + 1).getX() + 13, outline.get(1 + i).getY() + 10), 8, outline.get(0).getClass() == Red.class ? Color.RED : Color.BLUE);
 					}
 				} else {
 					if (u > 0) {
 						outline.get(i +  sum-1-wall.get(u) ).linkedlist.add(outline.get( sum-wall.get(u)-1));
 						outline.get(sum-wall.get(u)-1).linkedlist.add(outline.get(i +  sum-1-wall.get(u)));
-						drawer.line(new Vector2(outline.get(i +  sum-1-wall.get(u) ).getX() + 13, outline.get(i +  sum-1-wall.get(u) ).getY() + 10), new Vector2(outline.get(  sum-1-wall.get(u)).getX() + 13, outline.get( sum-wall.get(u)-1).getY() + 10), 8, outline.get(i + sum-1-wall.get(u)  ).getClass() == Red.class ? Color.RED : Color.BLUE);
+						drawer.line(new Vector2(outline.get(i +  sum-1-wall.get(u) ).getX() + 13, outline.get(i +  sum-1-wall.get(u) ).getY() + 13), new Vector2(outline.get(  sum-1-wall.get(u)).getX() + 13, outline.get( sum-wall.get(u)-1).getY() + 13), 8, outline.get(i + sum-1-wall.get(u)  ).getClass() == Red.class ? Color.RED : Color.BLUE);
 					} else {
 						outline.get(i + 0).linkedlist.add(outline.get(0));
 						outline.get(0).linkedlist.add(outline.get(i + 0));
-						drawer.line(new Vector2(outline.get(i + 0).getX() + 13, outline.get(i + 0).getY() + 10), new Vector2(outline.get(0).getX() + 13, outline.get(0).getY() + 10), 8, outline.get(0).getClass() == Red.class ? Color.RED : Color.BLUE);
+						drawer.line(new Vector2(outline.get(i + 0).getX() + 13, outline.get(i + 0).getY() + 13), new Vector2(outline.get(0).getX() + 13, outline.get(0).getY() + 13), 8, outline.get(0).getClass() == Red.class ? Color.RED : Color.BLUE);
 					}
 				}
 			}

@@ -1,23 +1,25 @@
 package com.mygdx.dots;
 
-        import com.badlogic.gdx.Gdx;
-        import com.badlogic.gdx.ScreenAdapter;
-        import com.badlogic.gdx.graphics.Color;
-        import com.badlogic.gdx.graphics.GL20;
-        import com.badlogic.gdx.graphics.Texture;
-        import com.badlogic.gdx.graphics.g2d.BitmapFont;
-        import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-        import com.badlogic.gdx.graphics.g2d.TextureRegion;
-        import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-        import com.badlogic.gdx.math.Vector2;
-        import com.badlogic.gdx.scenes.scene2d.InputEvent;
-        import com.badlogic.gdx.scenes.scene2d.Stage;
-        import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-        import com.badlogic.gdx.scenes.scene2d.ui.Table;
-        import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-        import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-        import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-        import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+
+import static com.mygdx.dots.SettingsScreen.prefs;
 
 /**
  * Created by Ramazan on 22.05.2017.
@@ -34,8 +36,8 @@ public class Menu extends ScreenAdapter {
     TextButton button;
     TextButton settingbutton;
     TextButton creditbutton;
-    TextButton.TextButtonStyle textButtonStyle;
-    BitmapFont font;
+    static TextButton.TextButtonStyle textButtonStyle;
+    static BitmapFont font;
     Skin skin;
     TextureAtlas buttonAtlas;
 
@@ -55,6 +57,7 @@ public class Menu extends ScreenAdapter {
     @Override
     public void show() {
         Core.setLang();
+        Core.latestScreen=1;
         viewport = new ExtendViewport(WORLD_WIDTH, WORLD_HEIGHT);
 
         stage = new Stage(viewport);
@@ -84,9 +87,10 @@ public class Menu extends ScreenAdapter {
         button.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(Core.gameScreen);
-                if (0==0){
+                if (prefs.getInteger("count")<2) {
                     game.setScreen(Core.tutorial);
+                } else {
+                    game.setScreen(Core.gameScreen);
                 }
             }
         });
